@@ -1,0 +1,16 @@
+hash: 4c04364ee0fd4444283b63576d34ab23ee7ea68549e6573da96c5e7cb5da585b
+updated: 2017-01-03T23:43:14.889800741+09:00
+imports:
+- name: BurntSushi/toml
+  version: ""
+- name: github.com/BurntSushi/toml
+  version: 99064174e013895bbd9b025c31100bd1d9b590ca
+- name: github.com/mitchellh/go-homedir
+  version: 756f7b183b7ab78acdbbee5c7f392838ed459dda
+- name: github.com/urfave/cli
+  version: d86a009f5e13f83df65d0d6cee9a2e3f1445f0da
+- name: gopkg.in/urfave/cli.v1
+  version: a14d7d367bc02b1f57d88de97926727f2d936387
+- name: gopkg.in/yaml.v2
+  version: a5b47d31c556af34a302ce5d659e6fea44d90de0
+devImports: []

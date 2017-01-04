@@ -1,0 +1,5 @@
+package: kirimori
+import:
+- package: github.com/urfave/cli
+- package: github.com/mitchellh/go-homedir
+- package: BurntSushi/toml
