@@ -51,7 +51,7 @@ func makeApp() *cli.App {
 					writer.Write(defaultSettingFileText())
 					writer.Flush()
 				}
-				println("\x1b[32m%s\x1b[0m", "Success: Create setting file.")
+				fmt.Printf("\x1b[32m%s\x1b[0m", "Success: Create setting file.\n")
 				return nil
 			},
 		},
