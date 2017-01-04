@@ -57,10 +57,10 @@ func makeApp() *cli.App {
 		{
 			Name:    "add",
 			Aliases: []string{"a"},
-			Usage:   "add vim plugin",
+			Usage:   "add plugin",
 			Action: func(c *cli.Context) error {
 				// 設定ファイルの読み込み
-				var package_name = c.Args().First()
+				var plugin_name = c.Args().First()
 				var conf Config
 				if _, err := toml.DecodeFile(setting_file_path, &conf); err != nil {
 					println("Error: Can't read setting file.")
@@ -69,7 +69,62 @@ func makeApp() *cli.App {
 				conf.VimrcPath = strings.Replace(conf.VimrcPath, "~", home_path, 1)
 				// .vimrcのパスにファイルが存在するかどうか判定
 				if fileExists(conf.VimrcPath) {
+					// true: プラグインマネージャーの種類を取得し、case文でそれぞれ処理
 					vimrc_file, err := os.OpenFile(conf.VimrcPath, os.O_RDWR|os.O_APPEND, 0666)
+					if err != nil {
+						println("Error: Can't open .vimrc file.")
+						os.Exit(ExitCodeError)
+					}
+					defer vimrc_file.Close()
+
+					switch conf.ManagerType {
+					case "Vundle":
+						if err := addPluginForVundle(vimrc_file, plugin_name); err != nil {
+							println("Error: Fail add package.")
+							os.Exit(ExitCodeError)
+						}
+					case "NeoBundle":
+						if err := addPluginForNeoBundle(vimrc_file, plugin_name); err != nil {
+							println("Error: Fail add package.")
+							os.Exit(ExitCodeError)
+						}
+					case "dein.vim":
+						vimrc_content, err := createAddPluginContentForDein(vimrc_file, plugin_name)
+						if err != nil {
+							println("Error: Can't read .vimrc file.")
+							os.Exit(ExitCodeError)
+						}
+						if err := updateVimrc(conf.VimrcPath, vimrc_content); err != nil {
+							println("Error: Fail add package.")
+							os.Exit(ExitCodeError)
+						}
+					default:
+						println("Error: ManagerType is not specified.")
+						os.Exit(ExitCodeError)
+					}
+				} else {
+					println("Error: No .vimrc file exists.")
+					os.Exit(ExitCodeError)
+				}
+				return nil
+			},
+		},
+		{
+			Name:    "remove",
+			Aliases: []string{"r"},
+			Usage:   "remove plugin",
+			Action: func(c *cli.Context) error {
+				// 設定ファイルの読み込み
+				var plugin_name = c.Args().First()
+				var conf Config
+				if _, err := toml.DecodeFile(setting_file_path, &conf); err != nil {
+					println("Error: Can't read setting file.")
+					os.Exit(ExitCodeError)
+				}
+				conf.VimrcPath = strings.Replace(conf.VimrcPath, "~", home_path, 1)
+				// .vimrcのパスにファイルが存在するかどうか判定
+				if fileExists(conf.VimrcPath) {
+					vimrc_file, err := os.OpenFile(conf.VimrcPath, os.O_RDONLY, 0644)
 					if err != nil {
 						println("Error: Can't open .vimrc file.")
 						os.Exit(ExitCodeError)
@@ -78,18 +133,84 @@ func makeApp() *cli.App {
 					// true: プラグインマネージャーの種類を取得し、case文でそれぞれ処理
 					switch conf.ManagerType {
 					case "Vundle":
-						if err := addPackageForVundle(vimrc_file, package_name); err != nil {
-							println("Error: Fail add package.")
+						vimrc_content, err := createRemovePluginContentForVundle(vimrc_file, plugin_name)
+						if err != nil {
+							println("Error: Can't read .vimrc file.")
+							os.Exit(ExitCodeError)
+						}
+						if err := updateVimrc(conf.VimrcPath, vimrc_content); err != nil {
+							println("Error: Fail remove package.")
 							os.Exit(ExitCodeError)
 						}
 					case "NeoBundle":
-						if err := addPackageForNeoBundle(vimrc_file, package_name); err != nil {
-							println("Error: Fail add package.")
+						vimrc_content, err := createRemovePluginContentForNeoBundle(vimrc_file, plugin_name)
+						if err != nil {
+							println("Error: Can't read .vimrc file.")
+							os.Exit(ExitCodeError)
+						}
+						if err := updateVimrc(conf.VimrcPath, vimrc_content); err != nil {
+							println("Error: Fail remove package.")
 							os.Exit(ExitCodeError)
 						}
 					case "dein.vim":
-						if err := addPackageForDein(vimrc_file); err != nil {
-							println("Error: Fail add package.")
+						vimrc_content, err := createRemovePluginContentForDein(vimrc_file, plugin_name)
+						if err != nil {
+							println("Error: Can't read .vimrc file.")
+							os.Exit(ExitCodeError)
+						}
+						if err := updateVimrc(conf.VimrcPath, vimrc_content); err != nil {
+							println("Error: Fail remove package.")
+							os.Exit(ExitCodeError)
+						}
+					default:
+						println("Error: ManagerType is not specified.")
+						os.Exit(ExitCodeError)
+					}
+				} else {
+					println("Error: No .vimrc file exists.")
+					os.Exit(ExitCodeError)
+				}
+				return nil
+			},
+		},
+		{
+			Name:    "list",
+			Aliases: []string{"l"},
+			Usage:   "list plugin",
+			Action: func(c *cli.Context) error {
+				// 設定ファイルの読み込み
+				var conf Config
+				if _, err := toml.DecodeFile(setting_file_path, &conf); err != nil {
+					println("Error: Can't read setting file.")
+					os.Exit(ExitCodeError)
+				}
+				conf.VimrcPath = strings.Replace(conf.VimrcPath, "~", home_path, 1)
+				// .vimrcのパスにファイルが存在するかどうか判定
+				if fileExists(conf.VimrcPath) {
+					vimrc_file, err := os.OpenFile(conf.VimrcPath, os.O_RDONLY, 0644)
+					if err != nil {
+						println("Error: Can't open .vimrc file.")
+						os.Exit(ExitCodeError)
+					}
+					defer vimrc_file.Close()
+					// true: プラグインマネージャーの種類を取得し、case文でそれぞれ処理
+					switch conf.ManagerType {
+					case "Vundle":
+						err := listPluginForVundle(vimrc_file)
+						if err != nil {
+							println("Error: Can't read .vimrc file.")
+							os.Exit(ExitCodeError)
+						}
+					case "NeoBundle":
+						err := listPluginForNeoBundle(vimrc_file)
+						if err != nil {
+							println("Error: Can't read .vimrc file.")
+							os.Exit(ExitCodeError)
+						}
+					case "dein.vim":
+						err := listPluginForDein(vimrc_file)
+						if err != nil {
+							println("Error: Can't read .vimrc file.")
 							os.Exit(ExitCodeError)
 						}
 					default:
@@ -125,22 +246,165 @@ func fileExists(filename string) bool {
 	return err == nil
 }
 
-func addPackageForVundle(vimrc_file *os.File, package_name string) error {
+func addPluginForVundle(vimrc_file *os.File, plugin_name string) error {
 	writer := bufio.NewWriter(vimrc_file)
-	_, err := writer.WriteString("Bundle '" + package_name + "'")
+	_, err := writer.WriteString("Bundle '" + plugin_name + "'")
 	writer.Flush()
 	return err
 }
 
-func addPackageForNeoBundle(vimrc_file *os.File) error {
-	writer := bufio.NewWriter(vimrc_file)
-	_, err := writer.WriteString("NeoBundle '" + package_name + "'")
-	writer.Flush()
-	return nil
+func createRemovePluginContentForVundle(vimrc_file *os.File, plugin_name string) ([]byte, error) {
+	var rows []string
+	scanner := bufio.NewScanner(vimrc_file)
+	for scanner.Scan() {
+		var scan_text = scanner.Text()
+		if strings.Contains(scan_text, "Bundle '"+plugin_name+"'") {
+			continue
+		} else {
+			rows = append(rows, scan_text)
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		println("Err: Can't read .vimrc file.")
+		os.Exit(ExitCodeError)
+	}
+	vimrc_content := []byte(strings.Join(rows, "\n"))
+	err := scanner.Err()
+	return vimrc_content, err
 }
 
-func addPackageForDein(vimrc_file *os.File) error {
-	return nil
+func addPluginForNeoBundle(vimrc_file *os.File, plugin_name string) error {
+	writer := bufio.NewWriter(vimrc_file)
+	_, err := writer.WriteString("NeoBundle '" + plugin_name + "'")
+	writer.Flush()
+	return err
+}
+
+func createRemovePluginContentForNeoBundle(vimrc_file *os.File, plugin_name string) ([]byte, error) {
+	var rows []string
+	scanner := bufio.NewScanner(vimrc_file)
+	for scanner.Scan() {
+		var scan_text = scanner.Text()
+		rows = append(rows, scan_text)
+		if strings.Contains(scan_text, "NeoBundle '"+plugin_name+"'") {
+			continue
+		} else {
+			rows = append(rows, scan_text)
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		println("Err: Can't read .vimrc file.")
+		os.Exit(ExitCodeError)
+	}
+	vimrc_content := []byte(strings.Join(rows, "\n"))
+	err := scanner.Err()
+	return vimrc_content, err
+}
+
+func createAddPluginContentForDein(vimrc_file *os.File, plugin_name string) ([]byte, error) {
+	var rows []string
+	scanner := bufio.NewScanner(vimrc_file)
+	for scanner.Scan() {
+		var scan_text = scanner.Text()
+		rows = append(rows, scan_text)
+		if strings.Contains(scan_text, "call dein#begin") {
+			rows = append(rows, "call dein#add('"+plugin_name+"')")
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		println("Err: Can't read .vimrc file.")
+		os.Exit(ExitCodeError)
+	}
+	vimrc_content := []byte(strings.Join(rows, "\n"))
+	err := scanner.Err()
+	return vimrc_content, err
+}
+
+func createRemovePluginContentForDein(vimrc_file *os.File, plugin_name string) ([]byte, error) {
+	var rows []string
+	scanner := bufio.NewScanner(vimrc_file)
+	for scanner.Scan() {
+		var scan_text = scanner.Text()
+		if strings.Contains(scan_text, "call dein#add('"+plugin_name+"')") {
+			continue
+		} else {
+			rows = append(rows, scan_text)
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		println("Err: Can't read .vimrc file.")
+		os.Exit(ExitCodeError)
+	}
+	vimrc_content := []byte(strings.Join(rows, "\n"))
+	err := scanner.Err()
+	return vimrc_content, err
+}
+
+func updateVimrc(vimrc_file_path string, vimrc_content []byte) error {
+	vimrc_file, err := os.Create(vimrc_file_path)
+	if err != nil {
+		println("Err: Can't open .vimrc file.")
+		os.Exit(ExitCodeError)
+	}
+	writer := bufio.NewWriter(vimrc_file)
+	writer.Write(vimrc_content)
+	writer.Flush()
+	return err
+}
+
+func listPluginForVundle(vimrc_file *os.File) error {
+	scanner := bufio.NewScanner(vimrc_file)
+	for scanner.Scan() {
+		var scan_text = scanner.Text()
+		if strings.Contains(scan_text, "Bundle '") {
+			scan_text = strings.Replace(scan_text, "Bundle", "", 1)
+			scan_text = strings.Replace(scan_text, "'", "", -1)
+			println(scan_text)
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		println("Err: Can't read .vimrc file.")
+		os.Exit(ExitCodeError)
+	}
+	err := scanner.Err()
+	return err
+}
+
+func listPluginForNeoBundle(vimrc_file *os.File) error {
+	scanner := bufio.NewScanner(vimrc_file)
+	for scanner.Scan() {
+		var scan_text = scanner.Text()
+		if strings.Contains(scan_text, "NeoBundle '") {
+			scan_text = strings.Replace(scan_text, "NeoBundle", "", 1)
+			scan_text = strings.Replace(scan_text, "'", "", -1)
+			println(scan_text)
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		println("Err: Can't read .vimrc file.")
+		os.Exit(ExitCodeError)
+	}
+	err := scanner.Err()
+	return err
+}
+
+func listPluginForDein(vimrc_file *os.File) error {
+	scanner := bufio.NewScanner(vimrc_file)
+	for scanner.Scan() {
+		var scan_text = scanner.Text()
+		if strings.Contains(scan_text, "call dein#add") {
+			scan_text = strings.Replace(scan_text, "call dein#add", "", 1)
+			scan_text = strings.Replace(scan_text, "('", "", 1)
+			scan_text = strings.Replace(scan_text, "')", "", 1)
+			println(scan_text)
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		println("Err: Can't read .vimrc file.")
+		os.Exit(ExitCodeError)
+	}
+	err := scanner.Err()
+	return err
 }
 
 func main() {
