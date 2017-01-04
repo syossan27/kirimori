@@ -3,9 +3,13 @@ kirimori - Add vim plugin Tool.
 
 ## Requirement
 [golang/go](https://github.com/golang/go)
+
 [urfave/cli](https://github.com/urfave/cli)
+
 [mitchellh/go-homedir](https://github.com/mitchellh/go-homedir)
+
 [Masterminds/glide](https://github.com/Masterminds/glide)
+
 [BurntSushi/toml](https://github.com/BurntSushi/toml)
 
 ## Install
