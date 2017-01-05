@@ -23,17 +23,14 @@ $ go get github.com/syossan27/kirimori
 
 ```
 $ kirimori init
+Type your .vimrc path. (default: ~/.vimrc)
+> ~/.vimrc
+Choose a your vim bundle plugin. (default: 1)
+	1) Vundle
+	2) NeoBundle
+	3) dein.vim
+Type number > 1
 Success: Create setting file.
-```
-
-- Edit setting file.
-
-```~/.kirimori.toml
-# VimrcPath = "~/.vimrc"
-
-# ManagerType = "NeoBundle"
-# ManagerType = "Vundle"
-# ManagerType = "dein.vim"
 ```
 
 - Add vim plugin
