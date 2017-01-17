@@ -3,3 +3,6 @@ import:
 - package: github.com/urfave/cli
 - package: github.com/mitchellh/go-homedir
 - package: BurntSushi/toml
+- package: github.com/haya14busa/go-vimlparser
+  subpackages:
+  - /cmd/vimlparser
