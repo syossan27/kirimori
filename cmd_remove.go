@@ -32,7 +32,7 @@ func cmdRemove(c *cli.Context) error {
 			fatal("Error: Fail change file offset.")
 		}
 
-		vimrcContent, err := createRemovePluginContentForVundle(vimrcFile, pluginName, line)
+		vimrcContent, err := createRemovePluginContent(vimrcFile, pluginName, line)
 		if err != nil {
 			fatal("Error: Can't read .vimrc file.")
 		}
@@ -47,7 +47,7 @@ func cmdRemove(c *cli.Context) error {
 			fatal("Error: Fail change file offset.")
 		}
 
-		vimrcContent, err := createRemovePluginContentForNeoBundle(vimrcFile, pluginName, line)
+		vimrcContent, err := createRemovePluginContent(vimrcFile, pluginName, line)
 		if err != nil {
 			fatal("Error: Can't read .vimrc file.")
 		}
@@ -62,7 +62,7 @@ func cmdRemove(c *cli.Context) error {
 			fatal("Error: Fail change file offset.")
 		}
 
-		vimrcContent, err := createRemovePluginContentForDein(vimrcFile, pluginName, line)
+		vimrcContent, err := createRemovePluginContent(vimrcFile, pluginName, line)
 		if err != nil {
 			fatal("Error: Can't read .vimrc file.")
 		}

@@ -108,29 +108,7 @@ func createAddPluginContent(vimrcFile *os.File, format string, pluginName string
 	return vimrcContent, err
 }
 
-func createRemovePluginContentForVundle(vimrcFile *os.File, pluginName string, removeLine int) ([]byte, error) {
-	var rows []string
-	var index = 1
-	scanner := bufio.NewScanner(vimrcFile)
-	for scanner.Scan() {
-		var scanText = scanner.Text()
-		if index == removeLine {
-			index++
-			continue
-		} else {
-			rows = append(rows, scanText)
-		}
-		index++
-	}
-	if err := scanner.Err(); err != nil {
-		fatal("Error: Can't read .vimrc file.")
-	}
-	vimrcContent := []byte(strings.Join(rows, "\n"))
-	err := scanner.Err()
-	return vimrcContent, err
-}
-
-func createRemovePluginContentForNeoBundle(vimrcFile *os.File, pluginName string, removeLine int) ([]byte, error) {
+func createRemovePluginContent(vimrcFile *os.File, pluginName string, removeLine int) ([]byte, error) {
 	var rows []string
 	var index = 1
 	scanner := bufio.NewScanner(vimrcFile)
@@ -157,28 +135,6 @@ func addPluginForNeoBundle(vimrcFile *os.File, pluginName string) error {
 	_, err := writer.WriteString("\nNeoBundle '" + pluginName + "'")
 	writer.Flush()
 	return err
-}
-
-func createRemovePluginContentForDein(vimrcFile *os.File, pluginName string, removeLine int) ([]byte, error) {
-	var rows []string
-	var index = 1
-	scanner := bufio.NewScanner(vimrcFile)
-	for scanner.Scan() {
-		var scanText = scanner.Text()
-		if index == removeLine {
-			index++
-			continue
-		} else {
-			rows = append(rows, scanText)
-		}
-		index++
-	}
-	if err := scanner.Err(); err != nil {
-		fatal("Error: Can't read .vimrc file.")
-	}
-	vimrcContent := []byte(strings.Join(rows, "\n"))
-	err := scanner.Err()
-	return vimrcContent, err
 }
 
 func updateVimrc(vimrcFilePath string, vimrcContent []byte) error {
