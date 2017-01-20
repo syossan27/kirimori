@@ -55,7 +55,7 @@ func (v *RemoveDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
 
 // ListDeinVisitor is walker
 type ListDeinVisitor struct {
-	Added          bool
+	Found          bool
 	InstallPlugins []string
 }
 
@@ -65,13 +65,13 @@ func (v *ListDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
 		switch n := node.(type) {
 		case *ast.Ident:
 			if n.Name == "dein#add" {
-				v.Added = true
+				v.Found = true
 			}
 		case *ast.BasicLit:
-			if v.Added {
+			if v.Found {
 				name := strings.Replace(n.Value, "'", "", -1)
 				v.InstallPlugins = append(v.InstallPlugins, name)
-				v.Added = false
+				v.Found = false
 			}
 		}
 	}
