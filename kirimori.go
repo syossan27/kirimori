@@ -231,7 +231,8 @@ func updateVimrc(vimrc_file_path string, vimrc_content []byte) error {
 
 func listPlugin(plugins []string) {
 	if len(plugins) == 0 {
-		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Nothing install plugin.\n")
+		success("Nothing install plugin.")
+		return
 	}
 	for _, install_plugin := range plugins {
 		fmt.Println(install_plugin)
