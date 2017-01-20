@@ -1,9 +1,12 @@
 package main
 
 import (
+	"fmt"
+	"os"
 	"strings"
 	"unicode/utf8"
 
+	vimlparser "github.com/haya14busa/go-vimlparser"
 	"github.com/haya14busa/go-vimlparser/ast"
 )
 
@@ -179,4 +182,115 @@ func (v *ListDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
 		}
 	}
 	return v
+}
+
+func scanAddLineForVundle(vimrc_file *os.File) int {
+	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
+	if err != nil {
+		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
+		os.Exit(ExitCodeError)
+	}
+	v := new(AddVundleVisitor)
+	ast.Walk(v, f)
+
+	return v.Line
+}
+
+func scanAddLineForNeoBundle(vimrc_file *os.File) int {
+	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
+	if err != nil {
+		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
+		os.Exit(ExitCodeError)
+	}
+	v := new(AddNeoBundleVisitor)
+	ast.Walk(v, f)
+
+	return v.Line
+}
+
+func scanAddLineForDein(vimrc_file *os.File) int {
+	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
+	if err != nil {
+		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
+		os.Exit(ExitCodeError)
+	}
+	v := new(AddDeinVisitor)
+	ast.Walk(v, f)
+
+	return v.Line
+}
+
+func scanRemoveLineForVundle(vimrc_file *os.File, plugin_name string) int {
+	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
+	if err != nil {
+		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
+		os.Exit(ExitCodeError)
+	}
+	v := new(RemoveVundleVisitor)
+	v.Name = plugin_name
+	ast.Walk(v, f)
+
+	return v.Line
+}
+
+func scanRemoveLineForNeoBundle(vimrc_file *os.File, plugin_name string) int {
+	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
+	if err != nil {
+		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
+		os.Exit(ExitCodeError)
+	}
+	v := new(RemoveNeoBundleVisitor)
+	v.Name = plugin_name
+	ast.Walk(v, f)
+
+	return v.Line
+}
+
+func scanRemoveLineForDein(vimrc_file *os.File, plugin_name string) int {
+	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
+	if err != nil {
+		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
+		os.Exit(ExitCodeError)
+	}
+	v := new(RemoveDeinVisitor)
+	v.Name = plugin_name
+	ast.Walk(v, f)
+
+	return v.Line
+}
+
+func scanListPluginForVundle(vimrc_file *os.File) []string {
+	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
+	if err != nil {
+		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
+		os.Exit(ExitCodeError)
+	}
+	v := new(ListVundleVisitor)
+	ast.Walk(v, f)
+
+	return v.InstallPlugins
+}
+
+func scanListPluginForNeoBundle(vimrc_file *os.File) []string {
+	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
+	if err != nil {
+		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
+		os.Exit(ExitCodeError)
+	}
+	v := new(ListNeoBundleVisitor)
+	ast.Walk(v, f)
+
+	return v.InstallPlugins
+}
+
+func scanListPluginForDein(vimrc_file *os.File) []string {
+	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
+	if err != nil {
+		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
+		os.Exit(ExitCodeError)
+	}
+	v := new(ListDeinVisitor)
+	ast.Walk(v, f)
+
+	return v.InstallPlugins
 }
