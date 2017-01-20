@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/BurntSushi/toml"
@@ -25,26 +26,31 @@ const (
 // Manager manage the PluginManager
 var pluginManagers = []struct {
 	Name    string
+	Key     string
 	Manager PluginManager
 	URL     string
 }{
 	{
 		Name:    "Vundle",
+		Key:     "vundle",
 		Manager: new(PluginVundle),
 		URL:     "https://github.com/VundleVim/Vundle.vim",
 	},
 	{
 		Name:    "NeoBundle",
+		Key:     "neobundle",
 		Manager: new(PluginNeoBundle),
 		URL:     "https://github.com/Shougo/neobundle.vim",
 	},
 	{
 		Name:    "dein.vim",
+		Key:     "dein",
 		Manager: new(PluginDein),
 		URL:     "https://github.com/Shougo/dein.vim",
 	},
 	{
 		Name:    "vim-plug",
+		Key:     "plug",
 		Manager: new(PluginPlug),
 		URL:     "https://github.com/junegunn/vim-plug/",
 	},
@@ -196,7 +202,7 @@ func config() *Config {
 	if _, err := toml.DecodeFile(settingFilePath, &conf); err != nil {
 		fatal("Error: Can't read setting file.")
 	}
-	conf.VimrcPath = strings.Replace(conf.VimrcPath, "~", homePath, 1)
+	conf.VimrcPath = regexp.MustCompile(`^~[/\\]`).ReplaceAllString(conf.VimrcPath, homePath)
 	// .vimrcのパスにファイルが存在するかどうか判定
 	if !fileExists(conf.VimrcPath) {
 		fatal("Error: No .vimrc file exists.\n")

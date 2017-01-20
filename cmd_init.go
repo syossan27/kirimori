@@ -42,12 +42,12 @@ func cmdInit(c *cli.Context) error {
 		fmt.Print("Type number > ")
 		var s string
 		if _, err := fmt.Scanln(&s); err != nil {
+			if s == "" {
+				break
+			}
 			return err
 		}
 		s = strings.TrimSpace(s)
-		if s == "" {
-			break
-		}
 		if i, err := strconv.Atoi(s); err == nil {
 			if i > 0 && i < len(pluginManagers) {
 				managerType = pluginManagers[i].Name
