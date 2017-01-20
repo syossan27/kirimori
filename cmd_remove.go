@@ -22,55 +22,31 @@ func cmdRemove(c *cli.Context) error {
 	}
 	defer vimrcFile.Close()
 
+	var line int
+
 	// true: プラグインマネージャーの種類を取得し、case文でそれぞれ処理
 	switch conf.ManagerType {
 	case "Vundle":
-		line := scanRemoveLineForVundle(vimrcFile, pluginName)
-
-		_, err := vimrcFile.Seek(0, 0)
-		if err != nil {
-			fatal("Error: Fail change file offset.")
-		}
-
-		vimrcContent, err := createRemovePluginContent(vimrcFile, pluginName, line)
-		if err != nil {
-			fatal("Error: Can't read .vimrc file.")
-		}
-		if err := updateVimrc(conf.VimrcPath, vimrcContent); err != nil {
-			fatal("Error: Fail remove plugin.")
-		}
+		line = scanRemoveLineForVundle(vimrcFile, pluginName)
 	case "NeoBundle":
-		line := scanRemoveLineForNeoBundle(vimrcFile, pluginName)
-
-		_, err := vimrcFile.Seek(0, 0)
-		if err != nil {
-			fatal("Error: Fail change file offset.")
-		}
-
-		vimrcContent, err := createRemovePluginContent(vimrcFile, pluginName, line)
-		if err != nil {
-			fatal("Error: Can't read .vimrc file.")
-		}
-		if err := updateVimrc(conf.VimrcPath, vimrcContent); err != nil {
-			fatal("Error: Fail remove plugin.")
-		}
+		line = scanRemoveLineForNeoBundle(vimrcFile, pluginName)
 	case "dein.vim":
-		line := scanRemoveLineForDein(vimrcFile, pluginName)
-
-		_, err := vimrcFile.Seek(0, 0)
-		if err != nil {
-			fatal("Error: Fail change file offset.")
-		}
-
-		vimrcContent, err := createRemovePluginContent(vimrcFile, pluginName, line)
-		if err != nil {
-			fatal("Error: Can't read .vimrc file.")
-		}
-		if err := updateVimrc(conf.VimrcPath, vimrcContent); err != nil {
-			fatal("Error: Fail remove plugin.")
-		}
+		line = scanRemoveLineForDein(vimrcFile, pluginName)
 	default:
 		fatal("Error: ManagerType is not specified.")
+	}
+
+	_, err = vimrcFile.Seek(0, 0)
+	if err != nil {
+		fatal("Error: Fail change file offset.")
+	}
+
+	vimrcContent, err := createRemovePluginContent(vimrcFile, pluginName, line)
+	if err != nil {
+		fatal("Error: Can't read .vimrc file.")
+	}
+	if err := updateVimrc(conf.VimrcPath, vimrcContent); err != nil {
+		fatal("Error: Fail remove plugin.")
 	}
 
 	success("Success: Remove plugin.")
