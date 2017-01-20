@@ -223,6 +223,8 @@ func updateVimrc(vimrc_file_path string, vimrc_content []byte) error {
 	if err != nil {
 		fatal("Error: Can't open .vimrc file.")
 	}
+	defer vimrc_file.Close()
+
 	writer := bufio.NewWriter(vimrc_file)
 	writer.Write(vimrc_content)
 	writer.Flush()
