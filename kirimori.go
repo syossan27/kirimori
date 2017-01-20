@@ -346,7 +346,7 @@ func listPlugin(plugins []string) {
 		fmt.Printf("\x1b[31m%s\x1b[0m", "Nothing install plugin.\n")
 	}
 	for _, install_plugin := range plugins {
-		println(install_plugin)
+		fmt.Println(install_plugin)
 	}
 }
 
