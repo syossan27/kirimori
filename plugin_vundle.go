@@ -20,7 +20,7 @@ func (v *AddVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
 		case *ast.Excmd:
-			if n.Cmd().Name == "Bundle" {
+			if n.Cmd().Name == "Plugin" {
 				v.Line = n.Pos().Line
 			}
 		}
@@ -39,7 +39,7 @@ func (v *RemoveVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
 		case *ast.Excmd:
-			if n.Cmd().Name == "Bundle" {
+			if n.Cmd().Name == "Plugin" {
 				if v.Name != "" && strings.Contains(n.Command, v.Name) {
 					v.Line = n.Pos().Line
 				}
@@ -59,7 +59,7 @@ func (v *ListVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
 		case *ast.Excmd:
-			if n.Cmd().Name == "Bundle" {
+			if n.Cmd().Name == "Plugin" {
 				command := n.Command
 				start := n.ExArg.Argpos.Offset - n.ExArg.Cmdpos.Offset
 				end := utf8.RuneCountInString(n.Command)
@@ -113,5 +113,5 @@ func (p *PluginVundle) ListPlugins(r io.Reader) []string {
 
 // Format implement PluginManager.Format
 func (p *PluginVundle) Format(name string) string {
-	return fmt.Sprintf("Bundle '%s'", name)
+	return fmt.Sprintf("Plugin '%s'", name)
 }
