@@ -26,8 +26,6 @@ type Config struct {
 
 var (
 	opt = &vimlparser.ParseOption{}
-
-	plugin_name string
 )
 
 type AddVundleVisitor struct {
@@ -48,6 +46,7 @@ func (v *AddVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 
 type RemoveVundleVisitor struct {
 	Line int
+	Name string
 }
 
 func (v *RemoveVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
@@ -55,7 +54,7 @@ func (v *RemoveVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 		switch n := node.(type) {
 		case *ast.Excmd:
 			if n.Cmd().Name == "Bundle" {
-				if strings.Contains(n.Command, plugin_name) {
+				if v.Name != "" && strings.Contains(n.Command, v.Name) {
 					v.Line = n.Pos().Line
 				}
 			}
@@ -76,8 +75,8 @@ func (v *ListVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 				command := n.Command
 				start := n.ExArg.Argpos.Offset - n.ExArg.Cmdpos.Offset
 				end := utf8.RuneCountInString(n.Command)
-				plugin_name = strings.Replace(command[start:end], "'", "", -1)
-				v.InstallPlugins = append(v.InstallPlugins, plugin_name)
+				name := strings.Replace(command[start:end], "'", "", -1)
+				v.InstallPlugins = append(v.InstallPlugins, name)
 			}
 		}
 	}
@@ -102,6 +101,7 @@ func (v *AddNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 
 type RemoveNeoBundleVisitor struct {
 	Line int
+	Name string
 }
 
 func (v *RemoveNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
@@ -109,7 +109,7 @@ func (v *RemoveNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 		switch n := node.(type) {
 		case *ast.Excmd:
 			if n.Cmd().Name == "NeoBundle" {
-				if strings.Contains(n.Command, plugin_name) {
+				if v.Name != "" && strings.Contains(n.Command, v.Name) {
 					v.Line = n.Pos().Line
 				}
 			}
@@ -130,8 +130,8 @@ func (v *ListNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 				command := n.Command
 				start := n.ExArg.Argpos.Offset - n.ExArg.Cmdpos.Offset
 				end := utf8.RuneCountInString(n.Command)
-				plugin_name = strings.Replace(command[start:end], "'", "", -1)
-				v.InstallPlugins = append(v.InstallPlugins, plugin_name)
+				name := strings.Replace(command[start:end], "'", "", -1)
+				v.InstallPlugins = append(v.InstallPlugins, name)
 			}
 		}
 	}
@@ -156,6 +156,7 @@ func (v *AddDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
 
 type RemoveDeinVisitor struct {
 	Line    int
+	Name    string
 	Removed bool
 }
 
@@ -168,7 +169,7 @@ func (v *RemoveDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
 			}
 		case *ast.BasicLit:
 			if v.Removed {
-				if strings.Contains(n.Value, plugin_name) {
+				if v.Name != "" && strings.Contains(n.Value, v.Name) {
 					v.Line = n.Pos().Line
 					v.Removed = false
 				}
@@ -192,8 +193,8 @@ func (v *ListDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
 			}
 		case *ast.BasicLit:
 			if v.Added {
-				plugin_name = strings.Replace(n.Value, "'", "", -1)
-				v.InstallPlugins = append(v.InstallPlugins, plugin_name)
+				name := strings.Replace(n.Value, "'", "", -1)
+				v.InstallPlugins = append(v.InstallPlugins, name)
 				v.Added = false
 			}
 		}
@@ -268,7 +269,7 @@ func makeApp() *cli.App {
 			Usage:   "add plugin",
 			Action: func(c *cli.Context) error {
 				// 設定ファイルの読み込み
-				plugin_name = c.Args().First()
+				plugin_name := c.Args().First()
 				var conf Config
 				if _, err := toml.DecodeFile(setting_file_path, &conf); err != nil {
 					println("Error: Can't read setting file.")
@@ -360,7 +361,7 @@ func makeApp() *cli.App {
 			Usage:   "remove plugin",
 			Action: func(c *cli.Context) error {
 				// 設定ファイルの読み込み
-				plugin_name = c.Args().First()
+				plugin_name := c.Args().First()
 				var conf Config
 				if _, err := toml.DecodeFile(setting_file_path, &conf); err != nil {
 					fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Can't read setting file.\n")
@@ -378,7 +379,7 @@ func makeApp() *cli.App {
 					// true: プラグインマネージャーの種類を取得し、case文でそれぞれ処理
 					switch conf.ManagerType {
 					case "Vundle":
-						line := scanRemoveLineForVundle(vimrc_file)
+						line := scanRemoveLineForVundle(vimrc_file, plugin_name)
 
 						_, err := vimrc_file.Seek(0, 0)
 						if err != nil {
@@ -396,7 +397,7 @@ func makeApp() *cli.App {
 							os.Exit(ExitCodeError)
 						}
 					case "NeoBundle":
-						line := scanRemoveLineForNeoBundle(vimrc_file)
+						line := scanRemoveLineForNeoBundle(vimrc_file, plugin_name)
 
 						_, err := vimrc_file.Seek(0, 0)
 						if err != nil {
@@ -414,7 +415,7 @@ func makeApp() *cli.App {
 							os.Exit(ExitCodeError)
 						}
 					case "dein.vim":
-						line := scanRemoveLineForDein(vimrc_file)
+						line := scanRemoveLineForDein(vimrc_file, plugin_name)
 
 						_, err := vimrc_file.Seek(0, 0)
 						if err != nil {
@@ -602,13 +603,14 @@ func createAddPluginContentForDein(vimrc_file *os.File, plugin_name string, addL
 	return vimrc_content, err
 }
 
-func scanRemoveLineForVundle(vimrc_file *os.File) int {
+func scanRemoveLineForVundle(vimrc_file *os.File, plugin_name string) int {
 	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
 	if err != nil {
 		fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
 		os.Exit(ExitCodeError)
 	}
 	v := new(RemoveVundleVisitor)
+	v.Name = plugin_name
 	ast.Walk(v, f)
 
 	return v.Line
@@ -637,13 +639,14 @@ func createRemovePluginContentForVundle(vimrc_file *os.File, plugin_name string,
 	return vimrc_content, err
 }
 
-func scanRemoveLineForNeoBundle(vimrc_file *os.File) int {
+func scanRemoveLineForNeoBundle(vimrc_file *os.File, plugin_name string) int {
 	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
 	if err != nil {
 		fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
 		os.Exit(ExitCodeError)
 	}
 	v := new(RemoveNeoBundleVisitor)
+	v.Name = plugin_name
 	ast.Walk(v, f)
 
 	return v.Line
@@ -679,13 +682,14 @@ func addPluginForNeoBundle(vimrc_file *os.File, plugin_name string) error {
 	return err
 }
 
-func scanRemoveLineForDein(vimrc_file *os.File) int {
+func scanRemoveLineForDein(vimrc_file *os.File, plugin_name string) int {
 	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
 	if err != nil {
 		fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
 		os.Exit(ExitCodeError)
 	}
 	v := new(RemoveDeinVisitor)
+	v.Name = plugin_name
 	ast.Walk(v, f)
 
 	return v.Line
