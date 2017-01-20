@@ -35,6 +35,7 @@ func cmdInit(c *cli.Context) error {
 	fmt.Println("\t1) Vundle")
 	fmt.Println("\t2) NeoBundle")
 	fmt.Println("\t3) dein.vim")
+	fmt.Println("\t4) vim-plug")
 	fmt.Print("Type number > ")
 	fmt.Scanln(&managerType)
 	switch managerType {
@@ -44,6 +45,8 @@ func cmdInit(c *cli.Context) error {
 		managerType = "NeoBundle"
 	case "3":
 		managerType = "dein.vim"
+	case "4":
+		managerType = "vim-plug"
 	default:
 		managerType = "Vundle"
 	}

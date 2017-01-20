@@ -25,6 +25,8 @@ func cmdList(c *cli.Context) error {
 		listPlugin(scanListPluginForNeoBundle(f))
 	case "dein.vim":
 		listPlugin(scanListPluginForDein(f))
+	case "vim-plug":
+		listPlugin(scanListPluginForPlug(f))
 	default:
 		fatal("Error: ManagerType is not specified.")
 	}

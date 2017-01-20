@@ -32,6 +32,8 @@ func cmdRemove(c *cli.Context) error {
 		line = scanRemoveLineForNeoBundle(f, name)
 	case "dein.vim":
 		line = scanRemoveLineForDein(f, name)
+	case "vim-plug":
+		line = scanRemoveLineForPlug(f, name)
 	default:
 		fatal("Error: ManagerType is not specified.")
 	}

@@ -36,6 +36,9 @@ func cmdAdd(c *cli.Context) error {
 	case "dein.vim":
 		line = scanAddLineForDein(f)
 		format = "call dein#add('%s')"
+	case "plug.vim":
+		line = scanAddLineForPlug(f)
+		format = "Plug '%s'"
 	default:
 		fatal("Error: ManagerType is not specified.")
 	}
