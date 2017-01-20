@@ -1,10 +1,12 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"os"
+	"path/filepath"
+	"runtime"
 
+	"github.com/BurntSushi/toml"
 	"github.com/urfave/cli"
 )
 
@@ -13,12 +15,19 @@ func cmdInit(c *cli.Context) error {
 		fatal("Error: Setting file exist.")
 	}
 
+	var vimrc_name string
+	if runtime.GOOS == "windows" {
+		vimrc_name = "_vimrc"
+	} else {
+		vimrc_name = ".vimrc"
+	}
+
 	var vimrc_file_path string
-	fmt.Println("Type your .vimrc path. (default: ~/.vimrc)")
+	fmt.Println("Type your .vimrc path. (default: ~/" + vimrc_name + ")")
 	fmt.Print("> ")
 	fmt.Scanln(&vimrc_file_path)
 	if vimrc_file_path == "" {
-		vimrc_file_path = "~/.vimrc"
+		vimrc_file_path = filepath.Join(home_path, vimrc_name)
 	}
 
 	var manager_type string
@@ -45,10 +54,12 @@ func cmdInit(c *cli.Context) error {
 	}
 	defer file.Close()
 
-	writer := bufio.NewWriter(file)
-	writer.Write(createSettingFileText(vimrc_file_path, manager_type))
-	writer.Flush()
-
-	success("Success: Create setting file.")
-	return nil
+	var conf Config
+	conf.ManagerType = manager_type
+	conf.VimrcPath = vimrc_file_path
+	err = toml.NewEncoder(file).Encode(&conf)
+	if err == nil {
+		success("Success: Create setting file.")
+	}
+	return err
 }
