@@ -31,11 +31,11 @@ func cmdAdd(c *cli.Context) error {
 		fatal("Error: Fail change file offset.")
 	}
 
-	content, err := createAddPluginContent(f, manager.Format(name), line)
+	b, err := createAddPluginContent(f, manager.Format(name), line)
 	if err != nil {
 		fatal("Error: Can't read .vimrc file.")
 	}
-	if err := updateVimrc(conf.VimrcPath, content); err != nil {
+	if err := updateVimrc(conf.VimrcPath, b); err != nil {
 		fatal("Error: Fail add plugin.")
 	}
 

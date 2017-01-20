@@ -24,12 +24,12 @@ func cmdInit(c *cli.Context) error {
 		vimrcName = ".vimrc"
 	}
 
-	var vimrcFilePath string
+	var filename string
 	fmt.Println("Type your .vimrc path. (default: ~/" + vimrcName + ")")
 	fmt.Print("> ")
-	fmt.Scanln(&vimrcFilePath)
-	if vimrcFilePath == "" {
-		vimrcFilePath = filepath.Join(homePath, vimrcName)
+	fmt.Scanln(&filename)
+	if filename == "" {
+		filename = filepath.Join(homePath, vimrcName)
 	}
 
 	var managerType string
@@ -64,7 +64,7 @@ func cmdInit(c *cli.Context) error {
 
 	var conf Config
 	conf.ManagerType = managerType
-	conf.VimrcPath = vimrcFilePath
+	conf.VimrcPath = filename
 	err = toml.NewEncoder(file).Encode(&conf)
 	if err == nil {
 		success("Success: Create setting file.")

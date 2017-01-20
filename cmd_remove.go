@@ -30,11 +30,11 @@ func cmdRemove(c *cli.Context) error {
 		fatal("Error: Fail change file offset.")
 	}
 
-	content, err := createRemovePluginContent(f, line)
+	b, err := createRemovePluginContent(f, line)
 	if err != nil {
 		fatal("Error: Can't read .vimrc file.")
 	}
-	if err := updateVimrc(conf.VimrcPath, content); err != nil {
+	if err := updateVimrc(conf.VimrcPath, b); err != nil {
 		fatal("Error: Fail remove plugin.")
 	}
 
