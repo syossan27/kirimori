@@ -134,10 +134,10 @@ func fileExists(filename string) bool {
 	return err == nil
 }
 
-func createAddPluginContent(vimrcFile *os.File, line string, addLine int) ([]byte, error) {
+func createAddPluginContent(r io.Reader, line string, addLine int) ([]byte, error) {
 	var rows []string
 	var index = 1
-	scanner := bufio.NewScanner(vimrcFile)
+	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
 		var scanText = scanner.Text()
 		rows = append(rows, scanText)
@@ -149,16 +149,16 @@ func createAddPluginContent(vimrcFile *os.File, line string, addLine int) ([]byt
 	if addLine == 0 {
 		rows = append(rows, line)
 	}
-	vimrcContent := []byte(strings.Join(rows, "\n"))
+	b := []byte(strings.Join(rows, "\n"))
 
 	err := scanner.Err()
-	return vimrcContent, err
+	return b, err
 }
 
-func createRemovePluginContent(vimrcFile *os.File, removeLine int) ([]byte, error) {
+func createRemovePluginContent(r io.Reader, removeLine int) ([]byte, error) {
 	var rows []string
 	var index = 1
-	scanner := bufio.NewScanner(vimrcFile)
+	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
 		var scanText = scanner.Text()
 		if index == removeLine {
@@ -172,20 +172,20 @@ func createRemovePluginContent(vimrcFile *os.File, removeLine int) ([]byte, erro
 	if err := scanner.Err(); err != nil {
 		fatal("Error: Can't read .vimrc file.")
 	}
-	vimrcContent := []byte(strings.Join(rows, "\n"))
+	b := []byte(strings.Join(rows, "\n"))
 	err := scanner.Err()
-	return vimrcContent, err
+	return b, err
 }
 
-func updateVimrc(vimrcFilePath string, vimrcContent []byte) error {
-	vimrcFile, err := os.Create(vimrcFilePath)
+func updateVimrc(filename string, b []byte) error {
+	f, err := os.Create(filename)
 	if err != nil {
 		fatal("Error: Can't open .vimrc file.")
 	}
-	defer vimrcFile.Close()
+	defer f.Close()
 
-	writer := bufio.NewWriter(vimrcFile)
-	writer.Write(vimrcContent)
+	writer := bufio.NewWriter(f)
+	writer.Write(b)
 	writer.Flush()
 	return err
 }
