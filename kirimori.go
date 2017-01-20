@@ -64,9 +64,9 @@ type Config struct {
 
 // Manager return PluginManager for the ManagerType
 func (c *Config) Manager() PluginManager {
-	for _, manager := range pluginManagers {
-		if manager.Name == c.ManagerType {
-			return manager.Manager
+	for _, pm := range pluginManagers {
+		if pm.Name == c.ManagerType {
+			return pm.Manager
 		}
 	}
 	fatal("Error: ManagerType is not specified.")
@@ -155,7 +155,7 @@ func createAddPluginContent(r io.Reader, line string, addLine int) ([]byte, erro
 	if addLine == 0 {
 		rows = append(rows, line)
 	}
-	b := []byte(strings.Join(rows, "\n"))
+	b := []byte(strings.Join(rows, "\n") + "\n")
 
 	err := scanner.Err()
 	return b, err

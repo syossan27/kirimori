@@ -34,8 +34,8 @@ func cmdInit(c *cli.Context) error {
 
 	var managerType string
 	fmt.Println("Choose a your vim bundle plugin. (default: 1)")
-	for i, manager := range pluginManagers {
-		fmt.Printf("\t%d) %s : %s\n", i+1, manager.Name, manager.URL)
+	for i, pm := range pluginManagers {
+		fmt.Printf("\t%d) %s : %s\n", i+1, pm.Name, pm.URL)
 	}
 	managerType = "Vundle"
 	for {
