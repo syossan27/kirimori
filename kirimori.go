@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	vimlparser "github.com/haya14busa/go-vimlparser"
@@ -26,7 +27,7 @@ type Config struct {
 var (
 	opt                      = &vimlparser.ParseOption{}
 	home_path, _             = homedir.Dir()
-	setting_file_path string = home_path + "/.kirimori.toml"
+	setting_file_path string = filepath.Join(home_path, "/.kirimori.toml")
 	stdout                   = colorable.NewColorableStdout()
 	stderr                   = colorable.NewColorableStderr()
 )
