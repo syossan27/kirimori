@@ -70,7 +70,9 @@ func (v *ListVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	return v
 }
 
-func scanAddLineForVundle(vimrcFile *os.File) int {
+type PluginVundle struct{}
+
+func (p *PluginVundle) AddLine(vimrcFile *os.File) int {
 	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
 	if err != nil {
 		fatal("Error: Fail parse .vimrc file.")
@@ -81,7 +83,19 @@ func scanAddLineForVundle(vimrcFile *os.File) int {
 	return v.Line
 }
 
-func scanListPluginForVundle(vimrcFile *os.File) []string {
+func (p *PluginVundle) RemoveLine(vimrcFile *os.File, pluginName string) int {
+	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
+	if err != nil {
+		fatal("Error: Fail parse .vimrc file.")
+	}
+	v := new(RemoveVundleVisitor)
+	v.Name = pluginName
+	ast.Walk(v, f)
+
+	return v.Line
+}
+
+func (p *PluginVundle) ListPlugins(vimrcFile *os.File) []string {
 	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
 	if err != nil {
 		fatal("Error: Fail parse .vimrc file.")
@@ -92,14 +106,6 @@ func scanListPluginForVundle(vimrcFile *os.File) []string {
 	return v.InstallPlugins
 }
 
-func scanRemoveLineForVundle(vimrcFile *os.File, pluginName string) int {
-	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
-	if err != nil {
-		fatal("Error: Fail parse .vimrc file.")
-	}
-	v := new(RemoveVundleVisitor)
-	v.Name = pluginName
-	ast.Walk(v, f)
-
-	return v.Line
+func (p *PluginVundle) Format() string {
+	return "Bundle '%s'"
 }

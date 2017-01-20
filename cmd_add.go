@@ -23,25 +23,8 @@ func cmdAdd(c *cli.Context) error {
 	}
 	defer f.Close()
 
-	var line int
-	var format string
-
-	switch conf.ManagerType {
-	case "Vundle":
-		line = scanAddLineForVundle(f)
-		format = "Bundle '%s'"
-	case "NeoBundle":
-		line = scanAddLineForNeoBundle(f)
-		format = "NeoBundle '%s'"
-	case "dein.vim":
-		line = scanAddLineForDein(f)
-		format = "call dein#add('%s')"
-	case "plug.vim":
-		line = scanAddLineForPlug(f)
-		format = "Plug '%s'"
-	default:
-		fatal("Error: ManagerType is not specified.")
-	}
+	line := conf.Manager().AddLine(f)
+	format := conf.Manager().Format()
 
 	_, err = f.Seek(0, 0)
 	if err != nil {

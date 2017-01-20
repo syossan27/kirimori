@@ -18,17 +18,7 @@ func cmdList(c *cli.Context) error {
 	defer f.Close()
 
 	// true: プラグインマネージャーの種類を取得し、case文でそれぞれ処理
-	switch conf.ManagerType {
-	case "Vundle":
-		listPlugin(scanListPluginForVundle(f))
-	case "NeoBundle":
-		listPlugin(scanListPluginForNeoBundle(f))
-	case "dein.vim":
-		listPlugin(scanListPluginForDein(f))
-	case "vim-plug":
-		listPlugin(scanListPluginForPlug(f))
-	default:
-		fatal("Error: ManagerType is not specified.")
-	}
+	listPlugin(conf.Manager().ListPlugins(f))
+
 	return nil
 }

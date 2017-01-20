@@ -22,21 +22,8 @@ func cmdRemove(c *cli.Context) error {
 	}
 	defer f.Close()
 
-	var line int
-
 	// true: プラグインマネージャーの種類を取得し、case文でそれぞれ処理
-	switch conf.ManagerType {
-	case "Vundle":
-		line = scanRemoveLineForVundle(f, name)
-	case "NeoBundle":
-		line = scanRemoveLineForNeoBundle(f, name)
-	case "dein.vim":
-		line = scanRemoveLineForDein(f, name)
-	case "vim-plug":
-		line = scanRemoveLineForPlug(f, name)
-	default:
-		fatal("Error: ManagerType is not specified.")
-	}
+	line := conf.Manager().RemoveLine(f, name)
 
 	_, err = f.Seek(0, 0)
 	if err != nil {

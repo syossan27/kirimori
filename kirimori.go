@@ -27,6 +27,21 @@ type Config struct {
 	ManagerType string
 }
 
+func (c *Config) Manager() PluginManager {
+	switch c.ManagerType {
+	case "Vundle":
+		return new(PluginVundle)
+	case "NeoBundle":
+		return new(PluginNeoBundle)
+	case "dein.vim":
+		return new(PluginDein)
+	case "plug.vim":
+		return new(PluginPlug)
+	}
+	fatal("Error: ManagerType is not specified.")
+	return nil
+}
+
 var (
 	opt                    = &vimlparser.ParseOption{}
 	homePath, _            = homedir.Dir()
@@ -34,6 +49,13 @@ var (
 	stdout                 = colorable.NewColorableStdout()
 	stderr                 = colorable.NewColorableStderr()
 )
+
+type PluginManager interface {
+	AddLine(*os.File) int
+	ListPlugins(*os.File) []string
+	RemoveLine(*os.File, string) int
+	Format() string
+}
 
 func success(msg string) {
 	fmt.Fprintf(stderr, "\x1b[32m%s\x1b[0m\n", msg)

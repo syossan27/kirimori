@@ -70,7 +70,9 @@ func (v *ListNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	return v
 }
 
-func scanAddLineForNeoBundle(vimrcFile *os.File) int {
+type PluginNeoBundle struct{}
+
+func (p *PluginNeoBundle) AddLine(vimrcFile *os.File) int {
 	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
 	if err != nil {
 		fatal("Error: Fail parse .vimrc file.")
@@ -81,7 +83,7 @@ func scanAddLineForNeoBundle(vimrcFile *os.File) int {
 	return v.Line
 }
 
-func scanRemoveLineForNeoBundle(vimrcFile *os.File, pluginName string) int {
+func (p *PluginNeoBundle) RemoveLine(vimrcFile *os.File, pluginName string) int {
 	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
 	if err != nil {
 		fatal("Error: Fail parse .vimrc file.")
@@ -93,7 +95,7 @@ func scanRemoveLineForNeoBundle(vimrcFile *os.File, pluginName string) int {
 	return v.Line
 }
 
-func scanListPluginForNeoBundle(vimrcFile *os.File) []string {
+func (p *PluginNeoBundle) ListPlugins(vimrcFile *os.File) []string {
 	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
 	if err != nil {
 		fatal("Error: Fail parse .vimrc file.")
@@ -102,4 +104,8 @@ func scanListPluginForNeoBundle(vimrcFile *os.File) []string {
 	ast.Walk(v, f)
 
 	return v.InstallPlugins
+}
+
+func (p *PluginNeoBundle) Format() string {
+	return "NeoBundle '%s'"
 }
