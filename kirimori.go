@@ -169,8 +169,7 @@ func createRemovePluginContentForVundle(vimrc_file *os.File, plugin_name string,
 		index++
 	}
 	if err := scanner.Err(); err != nil {
-		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Can't read .vimrc file.\n")
-		os.Exit(ExitCodeError)
+		fatal("Error: Can't read .vimrc file.")
 	}
 	vimrc_content := []byte(strings.Join(rows, "\n"))
 	err := scanner.Err()
@@ -192,8 +191,7 @@ func createRemovePluginContentForNeoBundle(vimrc_file *os.File, plugin_name stri
 		index++
 	}
 	if err := scanner.Err(); err != nil {
-		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Can't read .vimrc file.\n")
-		os.Exit(ExitCodeError)
+		fatal("Error: Can't read .vimrc file.")
 	}
 	vimrc_content := []byte(strings.Join(rows, "\n"))
 	err := scanner.Err()
@@ -222,8 +220,7 @@ func createRemovePluginContentForDein(vimrc_file *os.File, plugin_name string, r
 		index++
 	}
 	if err := scanner.Err(); err != nil {
-		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Can't read .vimrc file.\n")
-		os.Exit(ExitCodeError)
+		fatal("Error: Can't read .vimrc file.")
 	}
 	vimrc_content := []byte(strings.Join(rows, "\n"))
 	err := scanner.Err()
@@ -233,8 +230,7 @@ func createRemovePluginContentForDein(vimrc_file *os.File, plugin_name string, r
 func updateVimrc(vimrc_file_path string, vimrc_content []byte) error {
 	vimrc_file, err := os.Create(vimrc_file_path)
 	if err != nil {
-		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Can't open .vimrc file.\n")
-		os.Exit(ExitCodeError)
+		fatal("Error: Can't open .vimrc file.")
 	}
 	writer := bufio.NewWriter(vimrc_file)
 	writer.Write(vimrc_content)
