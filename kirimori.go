@@ -84,7 +84,7 @@ var (
 // PluginManager is common interface of the plugin manages
 type PluginManager interface {
 	AddLine(io.Reader) int
-	ListPlugins(io.Reader) []string
+	ListPlugin(io.Reader) []string
 	RemoveLine(io.Reader, string) int
 	Format(string) string
 }
@@ -178,7 +178,7 @@ func createRemovePluginContent(r io.Reader, removeLine int) ([]byte, error) {
 	if err := scanner.Err(); err != nil {
 		fatal("Error: Can't read .vimrc file.")
 	}
-	b := []byte(strings.Join(rows, "\n"))
+	b := []byte(strings.Join(rows, "\n") + "\n")
 	err := scanner.Err()
 	return b, err
 }

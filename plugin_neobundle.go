@@ -102,8 +102,8 @@ func (p *PluginNeoBundle) RemoveLine(r io.Reader, pluginName string) int {
 	return v.Line
 }
 
-// ListPlugins implement PluginManager.ListPlugins
-func (p *PluginNeoBundle) ListPlugins(r io.Reader) []string {
+// ListPlugin implement PluginManager.ListPlugin
+func (p *PluginNeoBundle) ListPlugin(r io.Reader) []string {
 	f, err := vimlparser.ParseFile(r, "", opt)
 	if err != nil {
 		fatal("Error: Fail parse .vimrc file.")

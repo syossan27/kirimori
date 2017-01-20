@@ -18,7 +18,7 @@ func cmdList(c *cli.Context) error {
 	defer f.Close()
 
 	// true: プラグインマネージャーの種類を取得し、case文でそれぞれ処理
-	printLines(conf.Manager().ListPlugins(f))
+	printLines(conf.Manager().ListPlugin(f))
 
 	return nil
 }
