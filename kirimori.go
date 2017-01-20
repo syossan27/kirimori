@@ -38,7 +38,7 @@ var (
 type AddVundleVisitor struct {
 }
 
-func (v AddVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
+func (v *AddVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
 		case *ast.Excmd:
@@ -53,7 +53,7 @@ func (v AddVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 type RemoveVundleVisitor struct {
 }
 
-func (v RemoveVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
+func (v *RemoveVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
 		case *ast.Excmd:
@@ -70,7 +70,7 @@ func (v RemoveVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 type ListVundleVisitor struct {
 }
 
-func (v ListVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
+func (v *ListVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
 		case *ast.Excmd:
@@ -89,7 +89,7 @@ func (v ListVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 type AddNeoBundleVisitor struct {
 }
 
-func (v AddNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
+func (v *AddNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
 		case *ast.Excmd:
@@ -104,7 +104,7 @@ func (v AddNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 type RemoveNeoBundleVisitor struct {
 }
 
-func (v RemoveNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
+func (v *RemoveNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
 		case *ast.Excmd:
@@ -121,7 +121,7 @@ func (v RemoveNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 type ListNeoBundleVisitor struct {
 }
 
-func (v ListNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
+func (v *ListNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
 		case *ast.Excmd:
@@ -140,7 +140,7 @@ func (v ListNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 type AddDeinVisitor struct {
 }
 
-func (v AddDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
+func (v *AddDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
 		case *ast.Ident:
@@ -155,7 +155,7 @@ func (v AddDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
 type RemoveDeinVisitor struct {
 }
 
-func (v RemoveDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
+func (v *RemoveDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
 		case *ast.Ident:
@@ -177,7 +177,7 @@ func (v RemoveDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
 type ListDeinVisitor struct {
 }
 
-func (v ListDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
+func (v *ListDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
 		case *ast.Ident:
