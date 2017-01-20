@@ -29,6 +29,7 @@ Choose a your vim bundle plugin. (default: 1)
 	1) Vundle
 	2) NeoBundle
 	3) dein.vim
+	4) vim-plug
 Type number > 1
 Success: Create setting file.
 ```
