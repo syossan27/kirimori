@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"unicode/utf8"
 
-	"github.com/BurntSushi/toml"
 	vimlparser "github.com/haya14busa/go-vimlparser"
 	"github.com/haya14busa/go-vimlparser/ast"
 	"github.com/mitchellh/go-homedir"
@@ -25,182 +23,10 @@ type Config struct {
 }
 
 var (
-	opt = &vimlparser.ParseOption{}
+	opt                      = &vimlparser.ParseOption{}
+	home_path, _             = homedir.Dir()
+	setting_file_path string = home_path + "/.kirimori.toml"
 )
-
-type AddVundleVisitor struct {
-	Line int
-}
-
-func (v *AddVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
-	if node != nil {
-		switch n := node.(type) {
-		case *ast.Excmd:
-			if n.Cmd().Name == "Bundle" {
-				v.Line = n.Pos().Line
-			}
-		}
-	}
-	return v
-}
-
-type RemoveVundleVisitor struct {
-	Line int
-	Name string
-}
-
-func (v *RemoveVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
-	if node != nil {
-		switch n := node.(type) {
-		case *ast.Excmd:
-			if n.Cmd().Name == "Bundle" {
-				if v.Name != "" && strings.Contains(n.Command, v.Name) {
-					v.Line = n.Pos().Line
-				}
-			}
-		}
-	}
-	return v
-}
-
-type ListVundleVisitor struct {
-	InstallPlugins []string
-}
-
-func (v *ListVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
-	if node != nil {
-		switch n := node.(type) {
-		case *ast.Excmd:
-			if n.Cmd().Name == "Bundle" {
-				command := n.Command
-				start := n.ExArg.Argpos.Offset - n.ExArg.Cmdpos.Offset
-				end := utf8.RuneCountInString(n.Command)
-				name := strings.Replace(command[start:end], "'", "", -1)
-				v.InstallPlugins = append(v.InstallPlugins, name)
-			}
-		}
-	}
-	return v
-}
-
-type AddNeoBundleVisitor struct {
-	Line int
-}
-
-func (v *AddNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
-	if node != nil {
-		switch n := node.(type) {
-		case *ast.Excmd:
-			if n.Cmd().Name == "NeoBundle" {
-				v.Line = n.Pos().Line
-			}
-		}
-	}
-	return v
-}
-
-type RemoveNeoBundleVisitor struct {
-	Line int
-	Name string
-}
-
-func (v *RemoveNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
-	if node != nil {
-		switch n := node.(type) {
-		case *ast.Excmd:
-			if n.Cmd().Name == "NeoBundle" {
-				if v.Name != "" && strings.Contains(n.Command, v.Name) {
-					v.Line = n.Pos().Line
-				}
-			}
-		}
-	}
-	return v
-}
-
-type ListNeoBundleVisitor struct {
-	InstallPlugins []string
-}
-
-func (v *ListNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
-	if node != nil {
-		switch n := node.(type) {
-		case *ast.Excmd:
-			if n.Cmd().Name == "NeoBundle" {
-				command := n.Command
-				start := n.ExArg.Argpos.Offset - n.ExArg.Cmdpos.Offset
-				end := utf8.RuneCountInString(n.Command)
-				name := strings.Replace(command[start:end], "'", "", -1)
-				v.InstallPlugins = append(v.InstallPlugins, name)
-			}
-		}
-	}
-	return v
-}
-
-type AddDeinVisitor struct {
-	Line int
-}
-
-func (v *AddDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
-	if node != nil {
-		switch n := node.(type) {
-		case *ast.Ident:
-			if n.Name == "dein#add" {
-				v.Line = n.Pos().Line
-			}
-		}
-	}
-	return v
-}
-
-type RemoveDeinVisitor struct {
-	Line    int
-	Name    string
-	Removed bool
-}
-
-func (v *RemoveDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
-	if node != nil {
-		switch n := node.(type) {
-		case *ast.Ident:
-			if n.Name == "dein#add" {
-				v.Removed = true
-			}
-		case *ast.BasicLit:
-			if v.Removed {
-				if v.Name != "" && strings.Contains(n.Value, v.Name) {
-					v.Line = n.Pos().Line
-					v.Removed = false
-				}
-			}
-		}
-	}
-	return v
-}
-
-type ListDeinVisitor struct {
-	Added          bool
-	InstallPlugins []string
-}
-
-func (v *ListDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
-	if node != nil {
-		switch n := node.(type) {
-		case *ast.Ident:
-			if n.Name == "dein#add" {
-				v.Added = true
-			}
-		case *ast.BasicLit:
-			if v.Added {
-				name := strings.Replace(n.Value, "'", "", -1)
-				v.InstallPlugins = append(v.InstallPlugins, name)
-				v.Added = false
-			}
-		}
-	}
-	return v
-}
 
 func makeApp() *cli.App {
 	app := cli.NewApp()
@@ -208,282 +34,31 @@ func makeApp() *cli.App {
 	app.Name = "kirimori"
 	app.Usage = "Add Vim Plugin Tool"
 	app.Version = "1.0"
-	home_path, _ := homedir.Dir()
-	var setting_file_path string = home_path + "/.kirimori.toml"
 
 	app.Commands = []cli.Command{
 		{
 			Name:    "init",
 			Aliases: []string{"i"},
 			Usage:   "create setting file",
-			Action: func(c *cli.Context) error {
-				if fileExists(setting_file_path) {
-					fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Setting file exist.\n")
-					os.Exit(ExitCodeError)
-				}
-
-				var vimrc_file_path string
-				fmt.Println("Type your .vimrc path. (default: ~/.vimrc)")
-				fmt.Print("> ")
-				fmt.Scanln(&vimrc_file_path)
-				if vimrc_file_path == "" {
-					vimrc_file_path = "~/.vimrc"
-				}
-
-				var manager_type string
-				fmt.Println("Choose a your vim bundle plugin. (default: 1)")
-				fmt.Println("\t1) Vundle")
-				fmt.Println("\t2) NeoBundle")
-				fmt.Println("\t3) dein.vim")
-				fmt.Print("Type number > ")
-				fmt.Scanln(&manager_type)
-				switch manager_type {
-				case "1":
-					manager_type = "Vundle"
-				case "2":
-					manager_type = "NeoBundle"
-				case "3":
-					manager_type = "dein.vim"
-				default:
-					manager_type = "Vundle"
-				}
-
-				file, err := os.Create(setting_file_path)
-				if err != nil {
-					fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Setting file exist.\n")
-					os.Exit(ExitCodeError)
-				}
-				defer file.Close()
-
-				writer := bufio.NewWriter(file)
-				writer.Write(createSettingFileText(vimrc_file_path, manager_type))
-				writer.Flush()
-
-				fmt.Printf("\x1b[32m%s\x1b[0m", "Success: Create setting file.\n")
-				return nil
-			},
+			Action:  cmdInit,
 		},
 		{
 			Name:    "add",
 			Aliases: []string{"a"},
 			Usage:   "add plugin",
-			Action: func(c *cli.Context) error {
-				// 設定ファイルの読み込み
-				plugin_name := c.Args().First()
-				var conf Config
-				if _, err := toml.DecodeFile(setting_file_path, &conf); err != nil {
-					println("Error: Can't read setting file.")
-					os.Exit(ExitCodeError)
-				}
-				conf.VimrcPath = strings.Replace(conf.VimrcPath, "~", home_path, 1)
-				// .vimrcのパスにファイルが存在するかどうか判定
-				if fileExists(conf.VimrcPath) {
-					// true: プラグインマネージャーの種類を取得し、case文でそれぞれ処理
-					vimrc_file, err := os.OpenFile(conf.VimrcPath, os.O_RDWR|os.O_APPEND, 0666)
-					if err != nil {
-						fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Can't open .vimrc file.\n")
-						os.Exit(ExitCodeError)
-					}
-					defer vimrc_file.Close()
-
-					switch conf.ManagerType {
-					case "Vundle":
-						line := scanAddLineForVundle(vimrc_file)
-
-						_, err := vimrc_file.Seek(0, 0)
-						if err != nil {
-							fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Fail change file offset.\n")
-							os.Exit(ExitCodeError)
-						}
-
-						vimrc_content, err := createAddPluginContentForVundle(vimrc_file, plugin_name, line)
-						if err != nil {
-							fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Can't read .vimrc file.\n")
-							os.Exit(ExitCodeError)
-						}
-						if err := updateVimrc(conf.VimrcPath, vimrc_content); err != nil {
-							fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Fail add plugin.\n")
-							os.Exit(ExitCodeError)
-						}
-					case "NeoBundle":
-						line := scanAddLineForNeoBundle(vimrc_file)
-
-						_, err := vimrc_file.Seek(0, 0)
-						if err != nil {
-							fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Fail change file offset.\n")
-							os.Exit(ExitCodeError)
-						}
-
-						vimrc_content, err := createAddPluginContentForNeoBundle(vimrc_file, plugin_name, line)
-						if err != nil {
-							fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Can't read .vimrc file.\n")
-							os.Exit(ExitCodeError)
-						}
-						if err := updateVimrc(conf.VimrcPath, vimrc_content); err != nil {
-							fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Fail add plugin.\n")
-							os.Exit(ExitCodeError)
-						}
-					case "dein.vim":
-						line := scanAddLineForDein(vimrc_file)
-
-						_, err := vimrc_file.Seek(0, 0)
-						if err != nil {
-							fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Fail change file offset.\n")
-							os.Exit(ExitCodeError)
-						}
-
-						vimrc_content, err := createAddPluginContentForDein(vimrc_file, plugin_name, line)
-						if err != nil {
-							fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Can't read .vimrc file.\n")
-							os.Exit(ExitCodeError)
-						}
-						if err := updateVimrc(conf.VimrcPath, vimrc_content); err != nil {
-							fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Fail add plugin.\n")
-							os.Exit(ExitCodeError)
-						}
-					default:
-						fmt.Printf("\x1b[31m%s\x1b[0m", "Error: ManagerType is not specified.\n")
-						os.Exit(ExitCodeError)
-					}
-				} else {
-					fmt.Printf("\x1b[31m%s\x1b[0m", "Error: No .vimrc file exists.\n")
-					os.Exit(ExitCodeError)
-				}
-
-				fmt.Printf("\x1b[32m%s\x1b[0m", "Success: Add plugin.\n")
-
-				return nil
-			},
+			Action:  cmdAdd,
 		},
 		{
 			Name:    "remove",
 			Aliases: []string{"r"},
 			Usage:   "remove plugin",
-			Action: func(c *cli.Context) error {
-				// 設定ファイルの読み込み
-				plugin_name := c.Args().First()
-				var conf Config
-				if _, err := toml.DecodeFile(setting_file_path, &conf); err != nil {
-					fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Can't read setting file.\n")
-					os.Exit(ExitCodeError)
-				}
-				conf.VimrcPath = strings.Replace(conf.VimrcPath, "~", home_path, 1)
-				// .vimrcのパスにファイルが存在するかどうか判定
-				if fileExists(conf.VimrcPath) {
-					vimrc_file, err := os.OpenFile(conf.VimrcPath, os.O_RDONLY, 0644)
-					if err != nil {
-						fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Can't open .vimrc file.\n")
-						os.Exit(ExitCodeError)
-					}
-					defer vimrc_file.Close()
-					// true: プラグインマネージャーの種類を取得し、case文でそれぞれ処理
-					switch conf.ManagerType {
-					case "Vundle":
-						line := scanRemoveLineForVundle(vimrc_file, plugin_name)
-
-						_, err := vimrc_file.Seek(0, 0)
-						if err != nil {
-							fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Fail change file offset.\n")
-							os.Exit(ExitCodeError)
-						}
-
-						vimrc_content, err := createRemovePluginContentForVundle(vimrc_file, plugin_name, line)
-						if err != nil {
-							fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Can't read .vimrc file.\n")
-							os.Exit(ExitCodeError)
-						}
-						if err := updateVimrc(conf.VimrcPath, vimrc_content); err != nil {
-							fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Fail remove plugin.\n")
-							os.Exit(ExitCodeError)
-						}
-					case "NeoBundle":
-						line := scanRemoveLineForNeoBundle(vimrc_file, plugin_name)
-
-						_, err := vimrc_file.Seek(0, 0)
-						if err != nil {
-							fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Fail change file offset.\n")
-							os.Exit(ExitCodeError)
-						}
-
-						vimrc_content, err := createRemovePluginContentForNeoBundle(vimrc_file, plugin_name, line)
-						if err != nil {
-							fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Can't read .vimrc file.\n")
-							os.Exit(ExitCodeError)
-						}
-						if err := updateVimrc(conf.VimrcPath, vimrc_content); err != nil {
-							fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Fail remove plugin.\n")
-							os.Exit(ExitCodeError)
-						}
-					case "dein.vim":
-						line := scanRemoveLineForDein(vimrc_file, plugin_name)
-
-						_, err := vimrc_file.Seek(0, 0)
-						if err != nil {
-							fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Fail change file offset.\n")
-							os.Exit(ExitCodeError)
-						}
-
-						vimrc_content, err := createRemovePluginContentForDein(vimrc_file, plugin_name, line)
-						if err != nil {
-							fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Can't read .vimrc file.\n")
-							os.Exit(ExitCodeError)
-						}
-						if err := updateVimrc(conf.VimrcPath, vimrc_content); err != nil {
-							fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Fail remove plugin.\n")
-							os.Exit(ExitCodeError)
-						}
-					default:
-						fmt.Printf("\x1b[31m%s\x1b[0m", "Error: ManagerType is not specified.\n")
-						os.Exit(ExitCodeError)
-					}
-				} else {
-					fmt.Printf("\x1b[31m%s\x1b[0m", "Error: No .vimrc file exists.\n")
-					os.Exit(ExitCodeError)
-				}
-
-				fmt.Printf("\x1b[32m%s\x1b[0m", "Success: Remove plugin.\n")
-				return nil
-			},
+			Action:  cmdRemove,
 		},
 		{
 			Name:    "list",
 			Aliases: []string{"l"},
 			Usage:   "list plugin",
-			Action: func(c *cli.Context) error {
-				// 設定ファイルの読み込み
-				var conf Config
-				if _, err := toml.DecodeFile(setting_file_path, &conf); err != nil {
-					fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Can't read setting file.\n")
-					os.Exit(ExitCodeError)
-				}
-				conf.VimrcPath = strings.Replace(conf.VimrcPath, "~", home_path, 1)
-				// .vimrcのパスにファイルが存在するかどうか判定
-				if fileExists(conf.VimrcPath) {
-					vimrc_file, err := os.OpenFile(conf.VimrcPath, os.O_RDONLY, 0644)
-					if err != nil {
-						fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Can't open .vimrc file.\n")
-						os.Exit(ExitCodeError)
-					}
-					defer vimrc_file.Close()
-
-					// true: プラグインマネージャーの種類を取得し、case文でそれぞれ処理
-					switch conf.ManagerType {
-					case "Vundle":
-						listPlugin(scanListPluginForVundle(vimrc_file))
-					case "NeoBundle":
-						listPlugin(scanListPluginForNeoBundle(vimrc_file))
-					case "dein.vim":
-						listPlugin(scanListPluginForDein(vimrc_file))
-					default:
-						fmt.Printf("\x1b[31m%s\x1b[0m", "Error: ManagerType is not specified.\n")
-						os.Exit(ExitCodeError)
-					}
-				} else {
-					fmt.Printf("\x1b[31m%s\x1b[0m", "Error: No .vimrc file exists.\n")
-					os.Exit(ExitCodeError)
-				}
-				return nil
-			},
+			Action:  cmdList,
 		},
 	}
 
