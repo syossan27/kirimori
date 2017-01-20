@@ -1,0 +1,6 @@
+call plug#begin('~/.vim/plugged')
+
+Plug 'mattn/gist-vim'
+Plug 'mattn/emmet-vim'
+
+call plug#end()

@@ -1,0 +1,2 @@
+VimrcPath = "testdir/dein.vimrc"
+ManagerType = "dein.vim"

@@ -1,0 +1,2 @@
+VimrcPath = "testdir/neobundle.vimrc"
+ManagerType = "NeoBundle"

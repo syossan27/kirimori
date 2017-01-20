@@ -1,0 +1,2 @@
+VimrcPath = "testdir/plug.vimrc"
+ManagerType = "vim-plug"
