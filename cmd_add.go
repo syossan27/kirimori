@@ -23,54 +23,34 @@ func cmdAdd(c *cli.Context) error {
 	}
 	defer vimrcFile.Close()
 
+	var line int
+	var format string
+
 	switch conf.ManagerType {
 	case "Vundle":
-		line := scanAddLineForVundle(vimrcFile)
-
-		_, err := vimrcFile.Seek(0, 0)
-		if err != nil {
-			fatal("Error: Fail change file offset.")
-		}
-
-		vimrcContent, err := createAddPluginContent(vimrcFile, "Bundle '%s'", pluginName, line)
-		if err != nil {
-			fatal("Error: Can't read .vimrc file.")
-		}
-		if err := updateVimrc(conf.VimrcPath, vimrcContent); err != nil {
-			fatal("Error: Fail add plugin.")
-		}
+		line = scanAddLineForVundle(vimrcFile)
+		format = "Bundle '%s'"
 	case "NeoBundle":
-		line := scanAddLineForNeoBundle(vimrcFile)
-
-		_, err := vimrcFile.Seek(0, 0)
-		if err != nil {
-			fatal("Error: Fail change file offset.")
-		}
-
-		vimrcContent, err := createAddPluginContent(vimrcFile, "NeoBundle '%s'", pluginName, line)
-		if err != nil {
-			fatal("Error: Can't read .vimrc file.")
-		}
-		if err := updateVimrc(conf.VimrcPath, vimrcContent); err != nil {
-			fatal("Error: Fail add plugin.")
-		}
+		line = scanAddLineForNeoBundle(vimrcFile)
+		format = "NeoBundle '%s'"
 	case "dein.vim":
-		line := scanAddLineForDein(vimrcFile)
-
-		_, err := vimrcFile.Seek(0, 0)
-		if err != nil {
-			fatal("Error: Fail change file offset.")
-		}
-
-		vimrcContent, err := createAddPluginContent(vimrcFile, "call dein#add('%s')", pluginName, line)
-		if err != nil {
-			fatal("Error: Can't read .vimrc file.")
-		}
-		if err := updateVimrc(conf.VimrcPath, vimrcContent); err != nil {
-			fatal("Error: Fail add plugin.")
-		}
+		line = scanAddLineForDein(vimrcFile)
+		format = "call dein#add('%s')"
 	default:
 		fatal("Error: ManagerType is not specified.")
+	}
+
+	_, err = vimrcFile.Seek(0, 0)
+	if err != nil {
+		fatal("Error: Fail change file offset.")
+	}
+
+	vimrcContent, err := createAddPluginContent(vimrcFile, format, pluginName, line)
+	if err != nil {
+		fatal("Error: Can't read .vimrc file.")
+	}
+	if err := updateVimrc(conf.VimrcPath, vimrcContent); err != nil {
+		fatal("Error: Fail add plugin.")
 	}
 
 	success("Success: Add plugin.")
