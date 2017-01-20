@@ -3,9 +3,7 @@ package main
 import (
 	"errors"
 	"os"
-	"strings"
 
-	"github.com/BurntSushi/toml"
 	"github.com/urfave/cli"
 )
 
@@ -15,15 +13,9 @@ func cmdAdd(c *cli.Context) error {
 	if pluginName == "" {
 		return errors.New("plguin name required")
 	}
-	var conf Config
-	if _, err := toml.DecodeFile(settingFilePath, &conf); err != nil {
-		fatal("Error: Can't read setting file.")
-	}
-	conf.VimrcPath = strings.Replace(conf.VimrcPath, "~", homePath, 1)
-	// .vimrcのパスにファイルが存在するかどうか判定
-	if !fileExists(conf.VimrcPath) {
-		fatal("Error: No .vimrc file exists.")
-	}
+
+	conf := config()
+
 	// true: プラグインマネージャーの種類を取得し、case文でそれぞれ処理
 	vimrcFile, err := os.OpenFile(conf.VimrcPath, os.O_RDWR|os.O_APPEND, 0666)
 	if err != nil {

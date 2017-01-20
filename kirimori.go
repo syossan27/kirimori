@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/BurntSushi/toml"
 	vimlparser "github.com/haya14busa/go-vimlparser"
 	"github.com/mattn/go-colorable"
 	"github.com/mitchellh/go-homedir"
@@ -232,6 +233,26 @@ func updateVimrc(vimrcFilePath string, vimrcContent []byte) error {
 	writer.Write(vimrcContent)
 	writer.Flush()
 	return err
+}
+
+func config() *Config {
+	// 設定ファイルの読み込み
+	var conf Config
+	if _, err := toml.DecodeFile(settingFilePath, &conf); err != nil {
+		fatal("Error: Can't read setting file.")
+	}
+	conf.VimrcPath = strings.Replace(conf.VimrcPath, "~", homePath, 1)
+	// .vimrcのパスにファイルが存在するかどうか判定
+	if !fileExists(conf.VimrcPath) {
+		fatal("Error: No .vimrc file exists.\n")
+	}
+	vimrcFile, err := os.OpenFile(conf.VimrcPath, os.O_RDONLY, 0644)
+	if err != nil {
+		fatal("Error: Can't open .vimrc file.")
+	}
+	defer vimrcFile.Close()
+
+	return &conf
 }
 
 func listPlugin(plugins []string) {
