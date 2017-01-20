@@ -20,7 +20,8 @@ func (v *AddNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
 		case *ast.Excmd:
-			if n.Cmd().Name == "NeoBundle" {
+			name := n.Cmd().Name
+			if name == "NeoBundle" || name == "NeoBundleFetch" {
 				v.Line = n.Pos().Line
 			}
 		}
@@ -39,7 +40,8 @@ func (v *RemoveNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
 		case *ast.Excmd:
-			if n.Cmd().Name == "NeoBundle" {
+			name := n.Cmd().Name
+			if name == "NeoBundle" || name == "NeoBundleFetch" {
 				if v.Name != "" && strings.Contains(n.Command, v.Name) {
 					v.Line = n.Pos().Line
 				}
@@ -59,7 +61,8 @@ func (v *ListNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
 		case *ast.Excmd:
-			if n.Cmd().Name == "NeoBundle" {
+			name := n.Cmd().Name
+			if name == "NeoBundle" || name == "NeoBundleFetch" {
 				command := n.Command
 				start := n.ExArg.Argpos.Offset - n.ExArg.Cmdpos.Offset
 				end := utf8.RuneCountInString(n.Command)

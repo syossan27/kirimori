@@ -20,7 +20,7 @@ func (v *AddPlugVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
 		case *ast.Excmd:
-			if n.Cmd().Name == "Bundle" {
+			if n.Cmd().Name == "Plug" {
 				v.Line = n.Pos().Line
 			}
 		}
@@ -39,7 +39,7 @@ func (v *RemovePlugVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
 		case *ast.Excmd:
-			if n.Cmd().Name == "Bundle" {
+			if n.Cmd().Name == "Plug" {
 				if v.Name != "" && strings.Contains(n.Command, v.Name) {
 					v.Line = n.Pos().Line
 				}
@@ -59,7 +59,7 @@ func (v *ListPlugVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
 		case *ast.Excmd:
-			if n.Cmd().Name == "Bundle" {
+			if n.Cmd().Name == "Plug" {
 				command := n.Command
 				start := n.ExArg.Argpos.Offset - n.ExArg.Cmdpos.Offset
 				end := utf8.RuneCountInString(n.Command)
