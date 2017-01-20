@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"os"
+	"io"
 	"strings"
 
 	vimlparser "github.com/haya14busa/go-vimlparser"
@@ -83,8 +83,8 @@ func (v *ListDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
 type PluginDein struct{}
 
 // AddLine implement PluginManager.AddLine
-func (p *PluginDein) AddLine(vimrcFile *os.File) int {
-	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
+func (p *PluginDein) AddLine(r io.Reader) int {
+	f, err := vimlparser.ParseFile(r, "", opt)
 	if err != nil {
 		fatal("Error: Fail parse .vimrc file.")
 	}
@@ -95,8 +95,8 @@ func (p *PluginDein) AddLine(vimrcFile *os.File) int {
 }
 
 // RemoveLine implement PluginManager.RemoveLine
-func (p *PluginDein) RemoveLine(vimrcFile *os.File, pluginName string) int {
-	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
+func (p *PluginDein) RemoveLine(r io.Reader, pluginName string) int {
+	f, err := vimlparser.ParseFile(r, "", opt)
 	if err != nil {
 		fatal("Error: Fail parse .vimrc file.")
 	}
@@ -108,8 +108,8 @@ func (p *PluginDein) RemoveLine(vimrcFile *os.File, pluginName string) int {
 }
 
 // ListPlugins implement PluginManager.ListPlugins
-func (p *PluginDein) ListPlugins(vimrcFile *os.File) []string {
-	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
+func (p *PluginDein) ListPlugins(r io.Reader) []string {
+	f, err := vimlparser.ParseFile(r, "", opt)
 	if err != nil {
 		fatal("Error: Fail parse .vimrc file.")
 	}

@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"os"
+	"io"
 	"strings"
 	"unicode/utf8"
 
@@ -75,8 +75,8 @@ func (v *ListVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 type PluginVundle struct{}
 
 // AddLine implement PluginManager.AddLine
-func (p *PluginVundle) AddLine(vimrcFile *os.File) int {
-	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
+func (p *PluginVundle) AddLine(r io.Reader) int {
+	f, err := vimlparser.ParseFile(r, "", opt)
 	if err != nil {
 		fatal("Error: Fail parse .vimrc file.")
 	}
@@ -87,8 +87,8 @@ func (p *PluginVundle) AddLine(vimrcFile *os.File) int {
 }
 
 // RemoveLine implement PluginManager.RemoveLine
-func (p *PluginVundle) RemoveLine(vimrcFile *os.File, pluginName string) int {
-	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
+func (p *PluginVundle) RemoveLine(r io.Reader, pluginName string) int {
+	f, err := vimlparser.ParseFile(r, "", opt)
 	if err != nil {
 		fatal("Error: Fail parse .vimrc file.")
 	}
@@ -100,8 +100,8 @@ func (p *PluginVundle) RemoveLine(vimrcFile *os.File, pluginName string) int {
 }
 
 // ListPlugins implement PluginManager.ListPlugins
-func (p *PluginVundle) ListPlugins(vimrcFile *os.File) []string {
-	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
+func (p *PluginVundle) ListPlugins(r io.Reader) []string {
+	f, err := vimlparser.ParseFile(r, "", opt)
 	if err != nil {
 		fatal("Error: Fail parse .vimrc file.")
 	}
