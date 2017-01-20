@@ -78,8 +78,10 @@ func (v *ListDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	return v
 }
 
+// PluginDein is implement of PluginManager
 type PluginDein struct{}
 
+// AddLine implement PluginManager.AddLine
 func (p *PluginDein) AddLine(vimrcFile *os.File) int {
 	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
 	if err != nil {
@@ -91,6 +93,7 @@ func (p *PluginDein) AddLine(vimrcFile *os.File) int {
 	return v.Line
 }
 
+// RemoveLine implement PluginManager.RemoveLine
 func (p *PluginDein) RemoveLine(vimrcFile *os.File, pluginName string) int {
 	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
 	if err != nil {
@@ -103,6 +106,7 @@ func (p *PluginDein) RemoveLine(vimrcFile *os.File, pluginName string) int {
 	return v.Line
 }
 
+// ListPlugins implement PluginManager.ListPlugins
 func (p *PluginDein) ListPlugins(vimrcFile *os.File) []string {
 	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
 	if err != nil {
@@ -114,6 +118,7 @@ func (p *PluginDein) ListPlugins(vimrcFile *os.File) []string {
 	return v.InstallPlugins
 }
 
+// Format implement PluginManager.Format
 func (p *PluginDein) Format() string {
 	return "call dein#add('%s')"
 }

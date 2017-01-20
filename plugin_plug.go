@@ -70,8 +70,10 @@ func (v *ListPlugVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	return v
 }
 
+// PluginPlug is implement of PluginManager
 type PluginPlug struct{}
 
+// AddLine implement PluginManager.AddLine
 func (p *PluginPlug) AddLine(vimrcFile *os.File) int {
 	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
 	if err != nil {
@@ -83,6 +85,7 @@ func (p *PluginPlug) AddLine(vimrcFile *os.File) int {
 	return v.Line
 }
 
+// RemoveLine implement PluginManager.RemoveLine
 func (p *PluginPlug) RemoveLine(vimrcFile *os.File, pluginName string) int {
 	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
 	if err != nil {
@@ -95,6 +98,7 @@ func (p *PluginPlug) RemoveLine(vimrcFile *os.File, pluginName string) int {
 	return v.Line
 }
 
+// ListPlugins implement PluginManager.ListPlugins
 func (p *PluginPlug) ListPlugins(vimrcFile *os.File) []string {
 	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
 	if err != nil {
@@ -106,6 +110,7 @@ func (p *PluginPlug) ListPlugins(vimrcFile *os.File) []string {
 	return v.InstallPlugins
 }
 
+// Format implement PluginManager.Format
 func (p *PluginPlug) Format() string {
 	return "Plug '%s'"
 }

@@ -27,6 +27,7 @@ type Config struct {
 	ManagerType string
 }
 
+// Manager return PluginManager for the ManagerType
 func (c *Config) Manager() PluginManager {
 	switch c.ManagerType {
 	case "Vundle":
@@ -50,6 +51,7 @@ var (
 	stderr                 = colorable.NewColorableStderr()
 )
 
+// PluginManager is common interface of the plugin manages
 type PluginManager interface {
 	AddLine(*os.File) int
 	ListPlugins(*os.File) []string
