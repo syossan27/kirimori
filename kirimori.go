@@ -24,14 +24,16 @@ type Config struct {
 	ManagerType string
 }
 
-var opt = &vimlparser.ParseOption{}
+var (
+	opt = &vimlparser.ParseOption{}
 
-var addPlugin = false
-var removePlugin = false
-var installPlugins []string
-var addLine int
-var removeLine int
-var plugin_name string
+	addPlugin      = false
+	removePlugin   = false
+	installPlugins []string
+	addLine        int
+	removeLine     int
+	plugin_name    string
+)
 
 type AddVundleVisitor struct {
 }
