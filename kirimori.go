@@ -27,9 +27,7 @@ type Config struct {
 var (
 	opt = &vimlparser.ParseOption{}
 
-	addPlugin      = false
-	installPlugins []string
-	plugin_name    string
+	plugin_name string
 )
 
 type AddVundleVisitor struct {
@@ -67,6 +65,7 @@ func (v *RemoveVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 }
 
 type ListVundleVisitor struct {
+	InstallPlugins []string
 }
 
 func (v *ListVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
@@ -78,7 +77,7 @@ func (v *ListVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 				start := n.ExArg.Argpos.Offset - n.ExArg.Cmdpos.Offset
 				end := utf8.RuneCountInString(n.Command)
 				plugin_name = strings.Replace(command[start:end], "'", "", -1)
-				installPlugins = append(installPlugins, plugin_name)
+				v.InstallPlugins = append(v.InstallPlugins, plugin_name)
 			}
 		}
 	}
@@ -120,6 +119,7 @@ func (v *RemoveNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 }
 
 type ListNeoBundleVisitor struct {
+	InstallPlugins []string
 }
 
 func (v *ListNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
@@ -131,7 +131,7 @@ func (v *ListNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 				start := n.ExArg.Argpos.Offset - n.ExArg.Cmdpos.Offset
 				end := utf8.RuneCountInString(n.Command)
 				plugin_name = strings.Replace(command[start:end], "'", "", -1)
-				installPlugins = append(installPlugins, plugin_name)
+				v.InstallPlugins = append(v.InstallPlugins, plugin_name)
 			}
 		}
 	}
@@ -179,7 +179,8 @@ func (v *RemoveDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
 }
 
 type ListDeinVisitor struct {
-	Added bool
+	Added          bool
+	InstallPlugins []string
 }
 
 func (v *ListDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
@@ -190,9 +191,9 @@ func (v *ListDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
 				v.Added = true
 			}
 		case *ast.BasicLit:
-			if addPlugin {
+			if v.Added {
 				plugin_name = strings.Replace(n.Value, "'", "", -1)
-				installPlugins = append(installPlugins, plugin_name)
+				v.InstallPlugins = append(v.InstallPlugins, plugin_name)
 				v.Added = false
 			}
 		}
@@ -467,14 +468,11 @@ func makeApp() *cli.App {
 					// true: プラグインマネージャーの種類を取得し、case文でそれぞれ処理
 					switch conf.ManagerType {
 					case "Vundle":
-						scanListPluginForVundle(vimrc_file)
-						listPlugin()
+						listPlugin(scanListPluginForVundle(vimrc_file))
 					case "NeoBundle":
-						scanListPluginForNeoBundle(vimrc_file)
-						listPlugin()
+						listPlugin(scanListPluginForNeoBundle(vimrc_file))
 					case "dein.vim":
-						scanListPluginForDein(vimrc_file)
-						listPlugin()
+						listPlugin(scanListPluginForDein(vimrc_file))
 					default:
 						fmt.Printf("\x1b[31m%s\x1b[0m", "Error: ManagerType is not specified.\n")
 						os.Exit(ExitCodeError)
@@ -728,7 +726,7 @@ func updateVimrc(vimrc_file_path string, vimrc_content []byte) error {
 	return err
 }
 
-func scanListPluginForVundle(vimrc_file *os.File) {
+func scanListPluginForVundle(vimrc_file *os.File) []string {
 	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
 	if err != nil {
 		fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
@@ -737,10 +735,10 @@ func scanListPluginForVundle(vimrc_file *os.File) {
 	v := new(ListVundleVisitor)
 	ast.Walk(v, f)
 
-	return
+	return v.InstallPlugins
 }
 
-func scanListPluginForNeoBundle(vimrc_file *os.File) {
+func scanListPluginForNeoBundle(vimrc_file *os.File) []string {
 	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
 	if err != nil {
 		fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
@@ -749,10 +747,10 @@ func scanListPluginForNeoBundle(vimrc_file *os.File) {
 	v := new(ListNeoBundleVisitor)
 	ast.Walk(v, f)
 
-	return
+	return v.InstallPlugins
 }
 
-func scanListPluginForDein(vimrc_file *os.File) {
+func scanListPluginForDein(vimrc_file *os.File) []string {
 	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
 	if err != nil {
 		fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
@@ -761,14 +759,14 @@ func scanListPluginForDein(vimrc_file *os.File) {
 	v := new(ListDeinVisitor)
 	ast.Walk(v, f)
 
-	return
+	return v.InstallPlugins
 }
 
-func listPlugin() {
-	if len(installPlugins) == 0 {
+func listPlugin(plugins []string) {
+	if len(plugins) == 0 {
 		fmt.Printf("\x1b[31m%s\x1b[0m", "Nothing install plugin.\n")
 	}
-	for _, install_plugin := range installPlugins {
+	for _, install_plugin := range plugins {
 		println(install_plugin)
 	}
 }
