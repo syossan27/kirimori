@@ -10,10 +10,12 @@ import (
 	"github.com/haya14busa/go-vimlparser/ast"
 )
 
+// AddVundleVisitor is walker
 type AddVundleVisitor struct {
 	Line int
 }
 
+// Visit implement ast.Walker
 func (v *AddVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
@@ -26,11 +28,13 @@ func (v *AddVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	return v
 }
 
+// RemoveVundleVisitor is walker
 type RemoveVundleVisitor struct {
 	Line int
 	Name string
 }
 
+// Visit implement ast.Walker
 func (v *RemoveVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
@@ -45,10 +49,12 @@ func (v *RemoveVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	return v
 }
 
+// ListVundleVisitor is walker
 type ListVundleVisitor struct {
 	InstallPlugins []string
 }
 
+// Visit implement ast.Walker
 func (v *ListVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
@@ -65,10 +71,12 @@ func (v *ListVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	return v
 }
 
+// AddNeoBundleVisitor is walker
 type AddNeoBundleVisitor struct {
 	Line int
 }
 
+// Visit implement ast.Walker
 func (v *AddNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
@@ -81,11 +89,13 @@ func (v *AddNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	return v
 }
 
+// RemoveNeoBundleVisitor is walker
 type RemoveNeoBundleVisitor struct {
 	Line int
 	Name string
 }
 
+// Visit implement ast.Walker
 func (v *RemoveNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
@@ -100,10 +110,12 @@ func (v *RemoveNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	return v
 }
 
+// ListNeoBundleVisitor is walker
 type ListNeoBundleVisitor struct {
 	InstallPlugins []string
 }
 
+// Visit implement ast.Walker
 func (v *ListNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
@@ -120,10 +132,12 @@ func (v *ListNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	return v
 }
 
+// AddDeinVisitor is walker
 type AddDeinVisitor struct {
 	Line int
 }
 
+// Visit implement ast.Walker
 func (v *AddDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
@@ -136,12 +150,14 @@ func (v *AddDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	return v
 }
 
+// RemoveDeinVisitor is walker
 type RemoveDeinVisitor struct {
 	Line    int
 	Name    string
 	Removed bool
 }
 
+// Visit implement ast.Walker
 func (v *RemoveDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
@@ -161,11 +177,13 @@ func (v *RemoveDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	return v
 }
 
+// ListDeinVisitor is walker
 type ListDeinVisitor struct {
 	Added          bool
 	InstallPlugins []string
 }
 
+// Visit implement ast.Walker
 func (v *ListDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
@@ -184,8 +202,8 @@ func (v *ListDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	return v
 }
 
-func scanAddLineForVundle(vimrc_file *os.File) int {
-	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
+func scanAddLineForVundle(vimrcFile *os.File) int {
+	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
 	if err != nil {
 		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
 		os.Exit(ExitCodeError)
@@ -196,8 +214,8 @@ func scanAddLineForVundle(vimrc_file *os.File) int {
 	return v.Line
 }
 
-func scanAddLineForNeoBundle(vimrc_file *os.File) int {
-	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
+func scanAddLineForNeoBundle(vimrcFile *os.File) int {
+	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
 	if err != nil {
 		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
 		os.Exit(ExitCodeError)
@@ -208,8 +226,8 @@ func scanAddLineForNeoBundle(vimrc_file *os.File) int {
 	return v.Line
 }
 
-func scanAddLineForDein(vimrc_file *os.File) int {
-	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
+func scanAddLineForDein(vimrcFile *os.File) int {
+	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
 	if err != nil {
 		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
 		os.Exit(ExitCodeError)
@@ -220,47 +238,47 @@ func scanAddLineForDein(vimrc_file *os.File) int {
 	return v.Line
 }
 
-func scanRemoveLineForVundle(vimrc_file *os.File, plugin_name string) int {
-	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
+func scanRemoveLineForVundle(vimrcFile *os.File, pluginName string) int {
+	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
 	if err != nil {
 		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
 		os.Exit(ExitCodeError)
 	}
 	v := new(RemoveVundleVisitor)
-	v.Name = plugin_name
+	v.Name = pluginName
 	ast.Walk(v, f)
 
 	return v.Line
 }
 
-func scanRemoveLineForNeoBundle(vimrc_file *os.File, plugin_name string) int {
-	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
+func scanRemoveLineForNeoBundle(vimrcFile *os.File, pluginName string) int {
+	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
 	if err != nil {
 		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
 		os.Exit(ExitCodeError)
 	}
 	v := new(RemoveNeoBundleVisitor)
-	v.Name = plugin_name
+	v.Name = pluginName
 	ast.Walk(v, f)
 
 	return v.Line
 }
 
-func scanRemoveLineForDein(vimrc_file *os.File, plugin_name string) int {
-	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
+func scanRemoveLineForDein(vimrcFile *os.File, pluginName string) int {
+	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
 	if err != nil {
 		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
 		os.Exit(ExitCodeError)
 	}
 	v := new(RemoveDeinVisitor)
-	v.Name = plugin_name
+	v.Name = pluginName
 	ast.Walk(v, f)
 
 	return v.Line
 }
 
-func scanListPluginForVundle(vimrc_file *os.File) []string {
-	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
+func scanListPluginForVundle(vimrcFile *os.File) []string {
+	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
 	if err != nil {
 		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
 		os.Exit(ExitCodeError)
@@ -271,8 +289,8 @@ func scanListPluginForVundle(vimrc_file *os.File) []string {
 	return v.InstallPlugins
 }
 
-func scanListPluginForNeoBundle(vimrc_file *os.File) []string {
-	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
+func scanListPluginForNeoBundle(vimrcFile *os.File) []string {
+	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
 	if err != nil {
 		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
 		os.Exit(ExitCodeError)
@@ -283,8 +301,8 @@ func scanListPluginForNeoBundle(vimrc_file *os.File) []string {
 	return v.InstallPlugins
 }
 
-func scanListPluginForDein(vimrc_file *os.File) []string {
-	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
+func scanListPluginForDein(vimrcFile *os.File) []string {
+	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
 	if err != nil {
 		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
 		os.Exit(ExitCodeError)

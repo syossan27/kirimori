@@ -14,21 +14,24 @@ import (
 )
 
 const (
+	// ExitCodeOK is exit code for OK
 	ExitCodeOK = iota
+	// ExitCodeError is exit code for Error
 	ExitCodeError
 )
 
+// Config hold the path and type for vimrc
 type Config struct {
 	VimrcPath   string
 	ManagerType string
 }
 
 var (
-	opt                      = &vimlparser.ParseOption{}
-	home_path, _             = homedir.Dir()
-	setting_file_path string = filepath.Join(home_path, "/.kirimori.toml")
-	stdout                   = colorable.NewColorableStdout()
-	stderr                   = colorable.NewColorableStderr()
+	opt                    = &vimlparser.ParseOption{}
+	homePath, _            = homedir.Dir()
+	settingFilePath string = filepath.Join(homePath, "/.kirimori.toml")
+	stdout                 = colorable.NewColorableStdout()
+	stderr                 = colorable.NewColorableStderr()
 )
 
 func success(msg string) {
@@ -82,151 +85,151 @@ func fileExists(filename string) bool {
 	return err == nil
 }
 
-func createAddPluginContentForVundle(vimrc_file *os.File, plugin_name string, addLine int) ([]byte, error) {
+func createAddPluginContentForVundle(vimrcFile *os.File, pluginName string, addLine int) ([]byte, error) {
 	var rows []string
-	var index int = 1
-	scanner := bufio.NewScanner(vimrc_file)
+	var index = 1
+	scanner := bufio.NewScanner(vimrcFile)
 	for scanner.Scan() {
-		var scan_text = scanner.Text()
-		rows = append(rows, scan_text)
+		var scanText = scanner.Text()
+		rows = append(rows, scanText)
 		if addLine == index {
-			rows = append(rows, "Bundle '"+plugin_name+"'")
+			rows = append(rows, "Bundle '"+pluginName+"'")
 		}
 		index++
 	}
 	if addLine == 0 {
-		rows = append(rows, "Bundle '"+plugin_name+"'")
+		rows = append(rows, "Bundle '"+pluginName+"'")
 	}
-	vimrc_content := []byte(strings.Join(rows, "\n"))
+	vimrcContent := []byte(strings.Join(rows, "\n"))
 
 	err := scanner.Err()
-	return vimrc_content, err
+	return vimrcContent, err
 }
 
-func createAddPluginContentForNeoBundle(vimrc_file *os.File, plugin_name string, addLine int) ([]byte, error) {
+func createAddPluginContentForNeoBundle(vimrcFile *os.File, pluginName string, addLine int) ([]byte, error) {
 	var rows []string
-	var index int = 1
-	scanner := bufio.NewScanner(vimrc_file)
+	var index = 1
+	scanner := bufio.NewScanner(vimrcFile)
 	for scanner.Scan() {
-		var scan_text = scanner.Text()
-		rows = append(rows, scan_text)
+		var scanText = scanner.Text()
+		rows = append(rows, scanText)
 		if addLine == index {
-			rows = append(rows, "NeoBundle '"+plugin_name+"'")
+			rows = append(rows, "NeoBundle '"+pluginName+"'")
 		}
 		index++
 	}
 	if addLine == 0 {
-		rows = append(rows, "NeoBundle '"+plugin_name+"'")
+		rows = append(rows, "NeoBundle '"+pluginName+"'")
 	}
-	vimrc_content := []byte(strings.Join(rows, "\n"))
+	vimrcContent := []byte(strings.Join(rows, "\n"))
 
 	err := scanner.Err()
-	return vimrc_content, err
+	return vimrcContent, err
 }
 
-func createAddPluginContentForDein(vimrc_file *os.File, plugin_name string, addLine int) ([]byte, error) {
+func createAddPluginContentForDein(vimrcFile *os.File, pluginName string, addLine int) ([]byte, error) {
 	var rows []string
-	var index int = 1
-	scanner := bufio.NewScanner(vimrc_file)
+	var index = 1
+	scanner := bufio.NewScanner(vimrcFile)
 	for scanner.Scan() {
-		var scan_text = scanner.Text()
-		rows = append(rows, scan_text)
+		var scanText = scanner.Text()
+		rows = append(rows, scanText)
 		if addLine == index {
-			rows = append(rows, "call dein#add('"+plugin_name+"')")
+			rows = append(rows, "call dein#add('"+pluginName+"')")
 		}
 		index++
 	}
 	if addLine == 0 {
-		rows = append(rows, "call dein#add('"+plugin_name+"')")
+		rows = append(rows, "call dein#add('"+pluginName+"')")
 	}
-	vimrc_content := []byte(strings.Join(rows, "\n"))
+	vimrcContent := []byte(strings.Join(rows, "\n"))
 
 	err := scanner.Err()
-	return vimrc_content, err
+	return vimrcContent, err
 }
 
-func createRemovePluginContentForVundle(vimrc_file *os.File, plugin_name string, removeLine int) ([]byte, error) {
+func createRemovePluginContentForVundle(vimrcFile *os.File, pluginName string, removeLine int) ([]byte, error) {
 	var rows []string
-	var index int = 1
-	scanner := bufio.NewScanner(vimrc_file)
+	var index = 1
+	scanner := bufio.NewScanner(vimrcFile)
 	for scanner.Scan() {
-		var scan_text = scanner.Text()
+		var scanText = scanner.Text()
 		if index == removeLine {
 			index++
 			continue
 		} else {
-			rows = append(rows, scan_text)
+			rows = append(rows, scanText)
 		}
 		index++
 	}
 	if err := scanner.Err(); err != nil {
 		fatal("Error: Can't read .vimrc file.")
 	}
-	vimrc_content := []byte(strings.Join(rows, "\n"))
+	vimrcContent := []byte(strings.Join(rows, "\n"))
 	err := scanner.Err()
-	return vimrc_content, err
+	return vimrcContent, err
 }
 
-func createRemovePluginContentForNeoBundle(vimrc_file *os.File, plugin_name string, removeLine int) ([]byte, error) {
+func createRemovePluginContentForNeoBundle(vimrcFile *os.File, pluginName string, removeLine int) ([]byte, error) {
 	var rows []string
-	var index int = 1
-	scanner := bufio.NewScanner(vimrc_file)
+	var index = 1
+	scanner := bufio.NewScanner(vimrcFile)
 	for scanner.Scan() {
-		var scan_text = scanner.Text()
+		var scanText = scanner.Text()
 		if index == removeLine {
 			index++
 			continue
 		} else {
-			rows = append(rows, scan_text)
+			rows = append(rows, scanText)
 		}
 		index++
 	}
 	if err := scanner.Err(); err != nil {
 		fatal("Error: Can't read .vimrc file.")
 	}
-	vimrc_content := []byte(strings.Join(rows, "\n"))
+	vimrcContent := []byte(strings.Join(rows, "\n"))
 	err := scanner.Err()
-	return vimrc_content, err
+	return vimrcContent, err
 }
 
-func addPluginForNeoBundle(vimrc_file *os.File, plugin_name string) error {
-	writer := bufio.NewWriter(vimrc_file)
-	_, err := writer.WriteString("\nNeoBundle '" + plugin_name + "'")
+func addPluginForNeoBundle(vimrcFile *os.File, pluginName string) error {
+	writer := bufio.NewWriter(vimrcFile)
+	_, err := writer.WriteString("\nNeoBundle '" + pluginName + "'")
 	writer.Flush()
 	return err
 }
 
-func createRemovePluginContentForDein(vimrc_file *os.File, plugin_name string, removeLine int) ([]byte, error) {
+func createRemovePluginContentForDein(vimrcFile *os.File, pluginName string, removeLine int) ([]byte, error) {
 	var rows []string
-	var index int = 1
-	scanner := bufio.NewScanner(vimrc_file)
+	var index = 1
+	scanner := bufio.NewScanner(vimrcFile)
 	for scanner.Scan() {
-		var scan_text = scanner.Text()
+		var scanText = scanner.Text()
 		if index == removeLine {
 			index++
 			continue
 		} else {
-			rows = append(rows, scan_text)
+			rows = append(rows, scanText)
 		}
 		index++
 	}
 	if err := scanner.Err(); err != nil {
 		fatal("Error: Can't read .vimrc file.")
 	}
-	vimrc_content := []byte(strings.Join(rows, "\n"))
+	vimrcContent := []byte(strings.Join(rows, "\n"))
 	err := scanner.Err()
-	return vimrc_content, err
+	return vimrcContent, err
 }
 
-func updateVimrc(vimrc_file_path string, vimrc_content []byte) error {
-	vimrc_file, err := os.Create(vimrc_file_path)
+func updateVimrc(vimrcFilePath string, vimrcContent []byte) error {
+	vimrcFile, err := os.Create(vimrcFilePath)
 	if err != nil {
 		fatal("Error: Can't open .vimrc file.")
 	}
-	defer vimrc_file.Close()
+	defer vimrcFile.Close()
 
-	writer := bufio.NewWriter(vimrc_file)
-	writer.Write(vimrc_content)
+	writer := bufio.NewWriter(vimrcFile)
+	writer.Write(vimrcContent)
 	writer.Flush()
 	return err
 }
@@ -236,8 +239,8 @@ func listPlugin(plugins []string) {
 		success("Nothing install plugin.")
 		return
 	}
-	for _, install_plugin := range plugins {
-		fmt.Println(install_plugin)
+	for _, plugin := range plugins {
+		fmt.Println(plugin)
 	}
 }
 

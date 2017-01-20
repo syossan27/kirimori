@@ -10,65 +10,65 @@ import (
 
 func cmdAdd(c *cli.Context) error {
 	// 設定ファイルの読み込み
-	plugin_name := c.Args().First()
+	pluginName := c.Args().First()
 	var conf Config
-	if _, err := toml.DecodeFile(setting_file_path, &conf); err != nil {
+	if _, err := toml.DecodeFile(settingFilePath, &conf); err != nil {
 		fatal("Error: Can't read setting file.")
 	}
-	conf.VimrcPath = strings.Replace(conf.VimrcPath, "~", home_path, 1)
+	conf.VimrcPath = strings.Replace(conf.VimrcPath, "~", homePath, 1)
 	// .vimrcのパスにファイルが存在するかどうか判定
 	if fileExists(conf.VimrcPath) {
 		// true: プラグインマネージャーの種類を取得し、case文でそれぞれ処理
-		vimrc_file, err := os.OpenFile(conf.VimrcPath, os.O_RDWR|os.O_APPEND, 0666)
+		vimrcFile, err := os.OpenFile(conf.VimrcPath, os.O_RDWR|os.O_APPEND, 0666)
 		if err != nil {
 			fatal("Error: Can't open .vimrc file.")
 		}
-		defer vimrc_file.Close()
+		defer vimrcFile.Close()
 
 		switch conf.ManagerType {
 		case "Vundle":
-			line := scanAddLineForVundle(vimrc_file)
+			line := scanAddLineForVundle(vimrcFile)
 
-			_, err := vimrc_file.Seek(0, 0)
+			_, err := vimrcFile.Seek(0, 0)
 			if err != nil {
 				fatal("Error: Fail change file offset.")
 			}
 
-			vimrc_content, err := createAddPluginContentForVundle(vimrc_file, plugin_name, line)
+			vimrcContent, err := createAddPluginContentForVundle(vimrcFile, pluginName, line)
 			if err != nil {
 				fatal("Error: Can't read .vimrc file.")
 			}
-			if err := updateVimrc(conf.VimrcPath, vimrc_content); err != nil {
+			if err := updateVimrc(conf.VimrcPath, vimrcContent); err != nil {
 				fatal("Error: Fail add plugin.")
 			}
 		case "NeoBundle":
-			line := scanAddLineForNeoBundle(vimrc_file)
+			line := scanAddLineForNeoBundle(vimrcFile)
 
-			_, err := vimrc_file.Seek(0, 0)
+			_, err := vimrcFile.Seek(0, 0)
 			if err != nil {
 				fatal("Error: Fail change file offset.")
 			}
 
-			vimrc_content, err := createAddPluginContentForNeoBundle(vimrc_file, plugin_name, line)
+			vimrcContent, err := createAddPluginContentForNeoBundle(vimrcFile, pluginName, line)
 			if err != nil {
 				fatal("Error: Can't read .vimrc file.")
 			}
-			if err := updateVimrc(conf.VimrcPath, vimrc_content); err != nil {
+			if err := updateVimrc(conf.VimrcPath, vimrcContent); err != nil {
 				fatal("Error: Fail add plugin.")
 			}
 		case "dein.vim":
-			line := scanAddLineForDein(vimrc_file)
+			line := scanAddLineForDein(vimrcFile)
 
-			_, err := vimrc_file.Seek(0, 0)
+			_, err := vimrcFile.Seek(0, 0)
 			if err != nil {
 				fatal("Error: Fail change file offset.")
 			}
 
-			vimrc_content, err := createAddPluginContentForDein(vimrc_file, plugin_name, line)
+			vimrcContent, err := createAddPluginContentForDein(vimrcFile, pluginName, line)
 			if err != nil {
 				fatal("Error: Can't read .vimrc file.")
 			}
-			if err := updateVimrc(conf.VimrcPath, vimrc_content); err != nil {
+			if err := updateVimrc(conf.VimrcPath, vimrcContent); err != nil {
 				fatal("Error: Fail add plugin.")
 			}
 		default:
