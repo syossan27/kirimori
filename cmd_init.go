@@ -10,8 +10,7 @@ import (
 
 func cmdInit(c *cli.Context) error {
 	if fileExists(setting_file_path) {
-		fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Setting file exist.\n")
-		os.Exit(ExitCodeError)
+		fatal("Error: Setting file exist.")
 	}
 
 	var vimrc_file_path string
@@ -42,8 +41,7 @@ func cmdInit(c *cli.Context) error {
 
 	file, err := os.Create(setting_file_path)
 	if err != nil {
-		fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Setting file exist.\n")
-		os.Exit(ExitCodeError)
+		fatal("Error: Setting file exist.")
 	}
 	defer file.Close()
 
@@ -51,6 +49,6 @@ func cmdInit(c *cli.Context) error {
 	writer.Write(createSettingFileText(vimrc_file_path, manager_type))
 	writer.Flush()
 
-	fmt.Printf("\x1b[32m%s\x1b[0m", "Success: Create setting file.\n")
+	success("Success: Create setting file.")
 	return nil
 }

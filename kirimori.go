@@ -8,6 +8,7 @@ import (
 
 	vimlparser "github.com/haya14busa/go-vimlparser"
 	"github.com/haya14busa/go-vimlparser/ast"
+	"github.com/mattn/go-colorable"
 	"github.com/mitchellh/go-homedir"
 	"github.com/urfave/cli"
 )
@@ -26,7 +27,18 @@ var (
 	opt                      = &vimlparser.ParseOption{}
 	home_path, _             = homedir.Dir()
 	setting_file_path string = home_path + "/.kirimori.toml"
+	stdout                   = colorable.NewColorableStdout()
+	stderr                   = colorable.NewColorableStderr()
 )
+
+func success(msg string) {
+	fmt.Fprintf(stderr, "\x1b[32m%s\x1b[0m\n", msg)
+}
+
+func fatal(msg string) {
+	fmt.Fprintf(stderr, "\x1b[31m%s\x1b[0m\n", msg)
+	os.Exit(ExitCodeError)
+}
 
 func makeApp() *cli.App {
 	app := cli.NewApp()
@@ -82,7 +94,7 @@ func fileExists(filename string) bool {
 func scanAddLineForVundle(vimrc_file *os.File) int {
 	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
 	if err != nil {
-		fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
+		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
 		os.Exit(ExitCodeError)
 	}
 	v := new(AddVundleVisitor)
@@ -94,7 +106,7 @@ func scanAddLineForVundle(vimrc_file *os.File) int {
 func scanAddLineForNeoBundle(vimrc_file *os.File) int {
 	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
 	if err != nil {
-		fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
+		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
 		os.Exit(ExitCodeError)
 	}
 	v := new(AddNeoBundleVisitor)
@@ -106,7 +118,7 @@ func scanAddLineForNeoBundle(vimrc_file *os.File) int {
 func scanAddLineForDein(vimrc_file *os.File) int {
 	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
 	if err != nil {
-		fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
+		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
 		os.Exit(ExitCodeError)
 	}
 	v := new(AddDeinVisitor)
@@ -181,7 +193,7 @@ func createAddPluginContentForDein(vimrc_file *os.File, plugin_name string, addL
 func scanRemoveLineForVundle(vimrc_file *os.File, plugin_name string) int {
 	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
 	if err != nil {
-		fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
+		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
 		os.Exit(ExitCodeError)
 	}
 	v := new(RemoveVundleVisitor)
@@ -206,7 +218,7 @@ func createRemovePluginContentForVundle(vimrc_file *os.File, plugin_name string,
 		index++
 	}
 	if err := scanner.Err(); err != nil {
-		fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Can't read .vimrc file.\n")
+		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Can't read .vimrc file.\n")
 		os.Exit(ExitCodeError)
 	}
 	vimrc_content := []byte(strings.Join(rows, "\n"))
@@ -217,7 +229,7 @@ func createRemovePluginContentForVundle(vimrc_file *os.File, plugin_name string,
 func scanRemoveLineForNeoBundle(vimrc_file *os.File, plugin_name string) int {
 	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
 	if err != nil {
-		fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
+		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
 		os.Exit(ExitCodeError)
 	}
 	v := new(RemoveNeoBundleVisitor)
@@ -242,7 +254,7 @@ func createRemovePluginContentForNeoBundle(vimrc_file *os.File, plugin_name stri
 		index++
 	}
 	if err := scanner.Err(); err != nil {
-		fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Can't read .vimrc file.\n")
+		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Can't read .vimrc file.\n")
 		os.Exit(ExitCodeError)
 	}
 	vimrc_content := []byte(strings.Join(rows, "\n"))
@@ -260,7 +272,7 @@ func addPluginForNeoBundle(vimrc_file *os.File, plugin_name string) error {
 func scanRemoveLineForDein(vimrc_file *os.File, plugin_name string) int {
 	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
 	if err != nil {
-		fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
+		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
 		os.Exit(ExitCodeError)
 	}
 	v := new(RemoveDeinVisitor)
@@ -285,7 +297,7 @@ func createRemovePluginContentForDein(vimrc_file *os.File, plugin_name string, r
 		index++
 	}
 	if err := scanner.Err(); err != nil {
-		fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Can't read .vimrc file.\n")
+		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Can't read .vimrc file.\n")
 		os.Exit(ExitCodeError)
 	}
 	vimrc_content := []byte(strings.Join(rows, "\n"))
@@ -296,7 +308,7 @@ func createRemovePluginContentForDein(vimrc_file *os.File, plugin_name string, r
 func updateVimrc(vimrc_file_path string, vimrc_content []byte) error {
 	vimrc_file, err := os.Create(vimrc_file_path)
 	if err != nil {
-		fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Can't open .vimrc file.\n")
+		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Can't open .vimrc file.\n")
 		os.Exit(ExitCodeError)
 	}
 	writer := bufio.NewWriter(vimrc_file)
@@ -308,7 +320,7 @@ func updateVimrc(vimrc_file_path string, vimrc_content []byte) error {
 func scanListPluginForVundle(vimrc_file *os.File) []string {
 	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
 	if err != nil {
-		fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
+		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
 		os.Exit(ExitCodeError)
 	}
 	v := new(ListVundleVisitor)
@@ -320,7 +332,7 @@ func scanListPluginForVundle(vimrc_file *os.File) []string {
 func scanListPluginForNeoBundle(vimrc_file *os.File) []string {
 	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
 	if err != nil {
-		fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
+		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
 		os.Exit(ExitCodeError)
 	}
 	v := new(ListNeoBundleVisitor)
@@ -332,7 +344,7 @@ func scanListPluginForNeoBundle(vimrc_file *os.File) []string {
 func scanListPluginForDein(vimrc_file *os.File) []string {
 	f, err := vimlparser.ParseFile(vimrc_file, "", opt)
 	if err != nil {
-		fmt.Printf("\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
+		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Error: Fail parse .vimrc file.\n")
 		os.Exit(ExitCodeError)
 	}
 	v := new(ListDeinVisitor)
@@ -343,7 +355,7 @@ func scanListPluginForDein(vimrc_file *os.File) []string {
 
 func listPlugin(plugins []string) {
 	if len(plugins) == 0 {
-		fmt.Printf("\x1b[31m%s\x1b[0m", "Nothing install plugin.\n")
+		fmt.Fprintf(stdout, "\x1b[31m%s\x1b[0m", "Nothing install plugin.\n")
 	}
 	for _, install_plugin := range plugins {
 		fmt.Println(install_plugin)
