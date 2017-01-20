@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strconv"
+	"strings"
 
 	"github.com/BurntSushi/toml"
 	"github.com/urfave/cli"
@@ -32,23 +34,26 @@ func cmdInit(c *cli.Context) error {
 
 	var managerType string
 	fmt.Println("Choose a your vim bundle plugin. (default: 1)")
-	fmt.Println("\t1) Vundle")
-	fmt.Println("\t2) NeoBundle")
-	fmt.Println("\t3) dein.vim")
-	fmt.Println("\t4) vim-plug")
-	fmt.Print("Type number > ")
-	fmt.Scanln(&managerType)
-	switch managerType {
-	case "1":
-		managerType = "Vundle"
-	case "2":
-		managerType = "NeoBundle"
-	case "3":
-		managerType = "dein.vim"
-	case "4":
-		managerType = "vim-plug"
-	default:
-		managerType = "Vundle"
+	for i, manager := range pluginManagers {
+		fmt.Printf("\t%d) %s\n", i+1, manager.Name)
+	}
+	managerType = "Vundle"
+	for {
+		fmt.Print("Type number > ")
+		var s string
+		if _, err := fmt.Scanln(&s); err != nil {
+			return err
+		}
+		s = strings.TrimSpace(s)
+		if s == "" {
+			break
+		}
+		if i, err := strconv.Atoi(s); err == nil {
+			if i > 0 && i < len(pluginManagers) {
+				managerType = pluginManagers[i].Name
+				break
+			}
+		}
 	}
 
 	file, err := os.Create(settingFilePath)
