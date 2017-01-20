@@ -86,62 +86,21 @@ func fileExists(filename string) bool {
 	return err == nil
 }
 
-func createAddPluginContentForVundle(vimrcFile *os.File, pluginName string, addLine int) ([]byte, error) {
+func createAddPluginContent(vimrcFile *os.File, format string, pluginName string, addLine int) ([]byte, error) {
 	var rows []string
 	var index = 1
 	scanner := bufio.NewScanner(vimrcFile)
+	line := fmt.Sprintf(format, pluginName)
 	for scanner.Scan() {
 		var scanText = scanner.Text()
 		rows = append(rows, scanText)
 		if addLine == index {
-			rows = append(rows, "Bundle '"+pluginName+"'")
+			rows = append(rows, line)
 		}
 		index++
 	}
 	if addLine == 0 {
-		rows = append(rows, "Bundle '"+pluginName+"'")
-	}
-	vimrcContent := []byte(strings.Join(rows, "\n"))
-
-	err := scanner.Err()
-	return vimrcContent, err
-}
-
-func createAddPluginContentForNeoBundle(vimrcFile *os.File, pluginName string, addLine int) ([]byte, error) {
-	var rows []string
-	var index = 1
-	scanner := bufio.NewScanner(vimrcFile)
-	for scanner.Scan() {
-		var scanText = scanner.Text()
-		rows = append(rows, scanText)
-		if addLine == index {
-			rows = append(rows, "NeoBundle '"+pluginName+"'")
-		}
-		index++
-	}
-	if addLine == 0 {
-		rows = append(rows, "NeoBundle '"+pluginName+"'")
-	}
-	vimrcContent := []byte(strings.Join(rows, "\n"))
-
-	err := scanner.Err()
-	return vimrcContent, err
-}
-
-func createAddPluginContentForDein(vimrcFile *os.File, pluginName string, addLine int) ([]byte, error) {
-	var rows []string
-	var index = 1
-	scanner := bufio.NewScanner(vimrcFile)
-	for scanner.Scan() {
-		var scanText = scanner.Text()
-		rows = append(rows, scanText)
-		if addLine == index {
-			rows = append(rows, "call dein#add('"+pluginName+"')")
-		}
-		index++
-	}
-	if addLine == 0 {
-		rows = append(rows, "call dein#add('"+pluginName+"')")
+		rows = append(rows, line)
 	}
 	vimrcContent := []byte(strings.Join(rows, "\n"))
 

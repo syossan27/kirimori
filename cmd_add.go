@@ -32,7 +32,7 @@ func cmdAdd(c *cli.Context) error {
 			fatal("Error: Fail change file offset.")
 		}
 
-		vimrcContent, err := createAddPluginContentForVundle(vimrcFile, pluginName, line)
+		vimrcContent, err := createAddPluginContent(vimrcFile, "Bundle '%s'", pluginName, line)
 		if err != nil {
 			fatal("Error: Can't read .vimrc file.")
 		}
@@ -47,7 +47,7 @@ func cmdAdd(c *cli.Context) error {
 			fatal("Error: Fail change file offset.")
 		}
 
-		vimrcContent, err := createAddPluginContentForNeoBundle(vimrcFile, pluginName, line)
+		vimrcContent, err := createAddPluginContent(vimrcFile, "NeoBundle '%s'", pluginName, line)
 		if err != nil {
 			fatal("Error: Can't read .vimrc file.")
 		}
@@ -62,7 +62,7 @@ func cmdAdd(c *cli.Context) error {
 			fatal("Error: Fail change file offset.")
 		}
 
-		vimrcContent, err := createAddPluginContentForDein(vimrcFile, pluginName, line)
+		vimrcContent, err := createAddPluginContent(vimrcFile, "call dein#add('%s')", pluginName, line)
 		if err != nil {
 			fatal("Error: Can't read .vimrc file.")
 		}
