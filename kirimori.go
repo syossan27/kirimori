@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -76,9 +77,9 @@ var (
 
 // PluginManager is common interface of the plugin manages
 type PluginManager interface {
-	AddLine(*os.File) int
-	ListPlugins(*os.File) []string
-	RemoveLine(*os.File, string) int
+	AddLine(io.Reader) int
+	ListPlugins(io.Reader) []string
+	RemoveLine(io.Reader, string) int
 	Format(string) string
 }
 
@@ -154,7 +155,7 @@ func createAddPluginContent(vimrcFile *os.File, line string, addLine int) ([]byt
 	return vimrcContent, err
 }
 
-func createRemovePluginContent(vimrcFile *os.File, pluginName string, removeLine int) ([]byte, error) {
+func createRemovePluginContent(vimrcFile *os.File, removeLine int) ([]byte, error) {
 	var rows []string
 	var index = 1
 	scanner := bufio.NewScanner(vimrcFile)
@@ -203,7 +204,7 @@ func config() *Config {
 	return &conf
 }
 
-func listPlugin(plugins []string) {
+func printLines(plugins []string) {
 	if len(plugins) == 0 {
 		success("Nothing install plugin.")
 		return
