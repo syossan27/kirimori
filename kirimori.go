@@ -29,7 +29,7 @@ type Config struct {
 var (
 	opt                    = &vimlparser.ParseOption{}
 	homePath, _            = homedir.Dir()
-	settingFilePath string = filepath.Join(homePath, "/.kirimori.toml")
+	settingFilePath string = filepath.Join(homePath, ".kirimori.toml")
 	stdout                 = colorable.NewColorableStdout()
 	stderr                 = colorable.NewColorableStderr()
 )
