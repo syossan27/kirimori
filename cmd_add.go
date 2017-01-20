@@ -8,12 +8,12 @@ import (
 )
 
 func cmdAdd(c *cli.Context) error {
-	// 設定ファイルの読み込み
 	name := c.Args().First()
 	if name == "" {
 		return errors.New("plguin name required")
 	}
 
+	// 設定ファイルの読み込み
 	conf := config()
 
 	// true: プラグインマネージャーの種類を取得し、case文でそれぞれ処理
