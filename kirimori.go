@@ -130,13 +130,6 @@ func createRemovePluginContent(vimrcFile *os.File, pluginName string, removeLine
 	return vimrcContent, err
 }
 
-func addPluginForNeoBundle(vimrcFile *os.File, pluginName string) error {
-	writer := bufio.NewWriter(vimrcFile)
-	_, err := writer.WriteString("\nNeoBundle '" + pluginName + "'")
-	writer.Flush()
-	return err
-}
-
 func updateVimrc(vimrcFilePath string, vimrcContent []byte) error {
 	vimrcFile, err := os.Create(vimrcFilePath)
 	if err != nil {
