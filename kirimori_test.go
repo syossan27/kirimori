@@ -1,11 +1,6 @@
 package main
 
-import (
-	"reflect"
-	"strings"
-	"testing"
-)
-
+/*
 const (
 	default_license            = "mit"
 	default_author             = ""
@@ -76,3 +71,4 @@ func TestRun_authorFlag(t *testing.T) {
 		t.Fatalf("Test Failed")
 	}
 }
+*/
