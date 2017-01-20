@@ -154,12 +154,6 @@ func config() *Config {
 	if !fileExists(conf.VimrcPath) {
 		fatal("Error: No .vimrc file exists.\n")
 	}
-	vimrcFile, err := os.OpenFile(conf.VimrcPath, os.O_RDONLY, 0644)
-	if err != nil {
-		fatal("Error: Can't open .vimrc file.")
-	}
-	defer vimrcFile.Close()
-
 	return &conf
 }
 
