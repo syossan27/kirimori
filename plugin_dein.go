@@ -28,9 +28,9 @@ func (v *AddDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
 
 // RemoveDeinVisitor is walker
 type RemoveDeinVisitor struct {
-	Line    int
-	Name    string
-	Removed bool
+	Line  int
+	Name  string
+	Found bool
 }
 
 // Visit implement ast.Walker
@@ -39,13 +39,13 @@ func (v *RemoveDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
 		switch n := node.(type) {
 		case *ast.Ident:
 			if n.Name == "dein#add" {
-				v.Removed = true
+				v.Found = true
 			}
 		case *ast.BasicLit:
-			if v.Removed {
+			if v.Found {
 				if v.Name != "" && strings.Contains(n.Value, v.Name) {
 					v.Line = n.Pos().Line
-					v.Removed = false
+					v.Found = false
 				}
 			}
 		}
