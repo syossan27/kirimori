@@ -23,13 +23,30 @@ const (
 
 // Manager manage the PluginManager
 var pluginManagers = []struct {
-	Name string
-	PluginManager
+	Name    string
+	Manager PluginManager
+	URL     string
 }{
-	{Name: "Vundle", PluginManager: new(PluginVundle)},
-	{Name: "NeoBundle", PluginManager: new(PluginNeoBundle)},
-	{Name: "dein.vim", PluginManager: new(PluginDein)},
-	{Name: "vim-plug", PluginManager: new(PluginPlug)},
+	{
+		Name:    "Vundle",
+		Manager: new(PluginVundle),
+		URL:     "https://github.com/VundleVim/Vundle.vim",
+	},
+	{
+		Name:    "NeoBundle",
+		Manager: new(PluginNeoBundle),
+		URL:     "https://github.com/Shougo/neobundle.vim",
+	},
+	{
+		Name:    "dein.vim",
+		Manager: new(PluginDein),
+		URL:     "https://github.com/Shougo/dein.vim",
+	},
+	{
+		Name:    "vim-plug",
+		Manager: new(PluginPlug),
+		URL:     "https://github.com/junegunn/vim-plug/",
+	},
 }
 
 // Config hold the path and type for vimrc
@@ -42,7 +59,7 @@ type Config struct {
 func (c *Config) Manager() PluginManager {
 	for _, manager := range pluginManagers {
 		if manager.Name == c.ManagerType {
-			return manager.PluginManager
+			return manager.Manager
 		}
 	}
 	fatal("Error: ManagerType is not specified.")
