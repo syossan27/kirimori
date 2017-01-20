@@ -9,43 +9,43 @@ import (
 
 func cmdRemove(c *cli.Context) error {
 	// 設定ファイルの読み込み
-	pluginName := c.Args().First()
-	if pluginName == "" {
+	name := c.Args().First()
+	if name == "" {
 		return errors.New("plguin name required")
 	}
 
 	conf := config()
 
-	vimrcFile, err := os.OpenFile(conf.VimrcPath, os.O_RDONLY, 0644)
+	f, err := os.OpenFile(conf.VimrcPath, os.O_RDONLY, 0644)
 	if err != nil {
 		fatal("Error: Can't open .vimrc file.")
 	}
-	defer vimrcFile.Close()
+	defer f.Close()
 
 	var line int
 
 	// true: プラグインマネージャーの種類を取得し、case文でそれぞれ処理
 	switch conf.ManagerType {
 	case "Vundle":
-		line = scanRemoveLineForVundle(vimrcFile, pluginName)
+		line = scanRemoveLineForVundle(f, name)
 	case "NeoBundle":
-		line = scanRemoveLineForNeoBundle(vimrcFile, pluginName)
+		line = scanRemoveLineForNeoBundle(f, name)
 	case "dein.vim":
-		line = scanRemoveLineForDein(vimrcFile, pluginName)
+		line = scanRemoveLineForDein(f, name)
 	default:
 		fatal("Error: ManagerType is not specified.")
 	}
 
-	_, err = vimrcFile.Seek(0, 0)
+	_, err = f.Seek(0, 0)
 	if err != nil {
 		fatal("Error: Fail change file offset.")
 	}
 
-	vimrcContent, err := createRemovePluginContent(vimrcFile, pluginName, line)
+	content, err := createRemovePluginContent(f, name, line)
 	if err != nil {
 		fatal("Error: Can't read .vimrc file.")
 	}
-	if err := updateVimrc(conf.VimrcPath, vimrcContent); err != nil {
+	if err := updateVimrc(conf.VimrcPath, content); err != nil {
 		fatal("Error: Fail remove plugin.")
 	}
 
