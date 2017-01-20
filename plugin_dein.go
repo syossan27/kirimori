@@ -99,6 +99,7 @@ func scanListPluginForDein(vimrcFile *os.File) []string {
 
 	return v.InstallPlugins
 }
+
 func scanRemoveLineForDein(vimrcFile *os.File, pluginName string) int {
 	f, err := vimlparser.ParseFile(vimrcFile, "", opt)
 	if err != nil {
