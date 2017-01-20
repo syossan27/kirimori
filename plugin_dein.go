@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
@@ -119,6 +120,6 @@ func (p *PluginDein) ListPlugins(vimrcFile *os.File) []string {
 }
 
 // Format implement PluginManager.Format
-func (p *PluginDein) Format() string {
-	return "call dein#add('%s')"
+func (p *PluginDein) Format(name string) string {
+	return fmt.Sprintf("call dein#add('%s')", name)
 }

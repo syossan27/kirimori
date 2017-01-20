@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strings"
 	"unicode/utf8"
@@ -111,6 +112,6 @@ func (p *PluginVundle) ListPlugins(vimrcFile *os.File) []string {
 }
 
 // Format implement PluginManager.Format
-func (p *PluginVundle) Format() string {
-	return "Bundle '%s'"
+func (p *PluginVundle) Format(name string) string {
+	return fmt.Sprintf("Bundle '%s'", name)
 }

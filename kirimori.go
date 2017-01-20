@@ -79,7 +79,7 @@ type PluginManager interface {
 	AddLine(*os.File) int
 	ListPlugins(*os.File) []string
 	RemoveLine(*os.File, string) int
-	Format() string
+	Format(string) string
 }
 
 func success(msg string) {
@@ -133,11 +133,10 @@ func fileExists(filename string) bool {
 	return err == nil
 }
 
-func createAddPluginContent(vimrcFile *os.File, format string, pluginName string, addLine int) ([]byte, error) {
+func createAddPluginContent(vimrcFile *os.File, line string, addLine int) ([]byte, error) {
 	var rows []string
 	var index = 1
 	scanner := bufio.NewScanner(vimrcFile)
-	line := fmt.Sprintf(format, pluginName)
 	for scanner.Scan() {
 		var scanText = scanner.Text()
 		rows = append(rows, scanText)

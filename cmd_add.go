@@ -23,15 +23,15 @@ func cmdAdd(c *cli.Context) error {
 	}
 	defer f.Close()
 
-	line := conf.Manager().AddLine(f)
-	format := conf.Manager().Format()
+	manager := conf.Manager()
+	line := manager.AddLine(f)
 
 	_, err = f.Seek(0, 0)
 	if err != nil {
 		fatal("Error: Fail change file offset.")
 	}
 
-	content, err := createAddPluginContent(f, format, name, line)
+	content, err := createAddPluginContent(f, manager.Format(name), line)
 	if err != nil {
 		fatal("Error: Can't read .vimrc file.")
 	}
