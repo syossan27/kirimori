@@ -77,15 +77,6 @@ func makeApp() *cli.App {
 	return app
 }
 
-func createSettingFileText(vimrc_file_path string, manager_type string) []byte {
-	body := []string{
-		"VimrcPath = \"" + vimrc_file_path + "\"",
-		"ManagerType = \"" + manager_type + "\"",
-	}
-
-	return []byte(strings.Join(body, "\n"))
-}
-
 func fileExists(filename string) bool {
 	_, err := os.Stat(filename)
 	return err == nil
