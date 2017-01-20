@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"os"
 	"strings"
 
@@ -11,6 +12,9 @@ import (
 func cmdAdd(c *cli.Context) error {
 	// 設定ファイルの読み込み
 	pluginName := c.Args().First()
+	if pluginName == "" {
+		return errors.New("plguin name required")
+	}
 	var conf Config
 	if _, err := toml.DecodeFile(settingFilePath, &conf); err != nil {
 		fatal("Error: Can't read setting file.")
