@@ -1,78 +1,112 @@
 package main
 
 import (
-	"reflect"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
 
-const (
-	default_license            = "mit"
-	default_author             = ""
-	default_comparison_license = "[MIT](http://opensource.org/licenses/mit-license.php)"
-	default_comparison_author  = "[](https://github.com/)"
-)
-
-func createCoparisonTemplate(comparison_license, comparison_author string) []byte {
-	body := []string{
-		"Overview",
-		"## Description",
-		"## Demo",
-		"## VS.",
-		"## Requirement",
-		"## Usage",
-		"## Install",
-		"## Contribution",
-		"## License",
-		comparison_license,
-		"## Author",
-		comparison_author,
+func testAddPlugin(t *testing.T, name, key string) {
+	settingFilePath = filepath.Join("testdir", key+".toml")
+	conf := config()
+	if conf.ManagerType != name {
+		t.Fatalf("expected %v but %v", name, conf.ManagerType)
 	}
 
-	return []byte("\n" + strings.Join(body, "\n\n"))
-}
+	manager := conf.Manager()
 
-func compareTestData(license, author, comparison_license, comparison_author string) bool {
-	readme_template := createReadTemplate(license, author)
-	comparison_template := createCoparisonTemplate(comparison_license, comparison_author)
-	return reflect.DeepEqual(readme_template, comparison_template)
-}
+	f, err := os.Open(conf.VimrcPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+	line := conf.Manager().AddLine(f)
 
-func TestRun_noFlag(t *testing.T) {
-	license := flagLicense(default_license)
-	author := flagAuthor(default_author)
-	comparison_license := default_comparison_license
-	comparison_author := default_comparison_author
+	_, err = f.Seek(0, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	result := compareTestData(license, author, comparison_license, comparison_author)
-
-	if !result {
-		t.Fatalf("Test Failed")
+	b, err := createAddPluginContent(f, manager.Format("mattn/emmet-vim"), line)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fb, err := ioutil.ReadFile(filepath.Join("testdir", key+".vimrc.add"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	expected := string(fb)
+	got := string(b)
+	if expected != got {
+		t.Fatalf("expected %s but %s", expected, got)
 	}
 }
 
-func TestRun_licenseFlag(t *testing.T) {
-	license := flagLicense("unlicense")
-	author := flagAuthor(default_author)
-	comparison_license := "[The Unlicense](http://unlicense.org/)"
-	comparison_author := default_comparison_author
+func testListPlugin(t *testing.T, name, key string) {
+	settingFilePath = filepath.Join("testdir", key+".toml")
+	conf := config()
+	if conf.ManagerType != name {
+		t.Fatalf("expected %v but %v", name, conf.ManagerType)
+	}
 
-	result := compareTestData(license, author, comparison_license, comparison_author)
+	f, err := os.Open(conf.VimrcPath + ".add")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+	plugins := conf.Manager().ListPlugin(f)
 
-	if !result {
-		t.Fatalf("Test Failed")
+	fb, err := ioutil.ReadFile(filepath.Join("testdir", key+".list"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	expected := strings.TrimSpace(string(fb))
+	got := strings.Join(plugins, "\n")
+	if expected != got {
+		t.Fatalf("expected %s but %s", expected, got)
 	}
 }
 
-func TestRun_authorFlag(t *testing.T) {
-	license := flagLicense(default_license)
-	author := flagAuthor("syossan27")
-	comparison_license := default_comparison_license
-	comparison_author := "[syossan27](https://github.com/syossan27)"
+func testRemovePlugin(t *testing.T, name, key string) {
+	settingFilePath = filepath.Join("testdir", key+".toml")
+	conf := config()
+	if conf.ManagerType != name {
+		t.Fatalf("expected %v but %v", name, conf.ManagerType)
+	}
 
-	result := compareTestData(license, author, comparison_license, comparison_author)
+	f, err := os.Open(conf.VimrcPath + ".add")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+	line := conf.Manager().RemoveLine(f, "mattn/emmet-vim")
 
-	if !result {
-		t.Fatalf("Test Failed")
+	_, err = f.Seek(0, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	b, err := createRemovePluginContent(f, line)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fb, err := ioutil.ReadFile(filepath.Join("testdir", key+".vimrc"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	expected := string(fb)
+	got := string(b)
+	if expected != got {
+		t.Fatalf("expected %s but %s", expected, got)
+	}
+}
+
+func TestPlugins(t *testing.T) {
+	for _, pm := range pluginManagers {
+		testAddPlugin(t, pm.Name, pm.Key)
+		testListPlugin(t, pm.Name, pm.Key)
+		testRemovePlugin(t, pm.Name, pm.Key)
 	}
 }

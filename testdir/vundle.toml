@@ -1,0 +1,2 @@
+VimrcPath = "testdir/vundle.vimrc"
+ManagerType = "Vundle"
