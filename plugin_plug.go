@@ -19,6 +19,10 @@ type AddPlugVisitor struct {
 func (v *AddPlugVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
+		case *ast.Ident:
+			if n.Name == "plug#begin" {
+				v.Line = n.Pos().Line
+			}
 		case *ast.Excmd:
 			if n.Cmd().Name == "Plug" {
 				v.Line = n.Pos().Line

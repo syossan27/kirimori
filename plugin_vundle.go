@@ -19,6 +19,10 @@ type AddVundleVisitor struct {
 func (v *AddVundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
+		case *ast.Ident:
+			if n.Name == "vundle#begin" {
+				v.Line = n.Pos().Line
+			}
 		case *ast.Excmd:
 			if n.Cmd().Name == "Plugin" {
 				v.Line = n.Pos().Line

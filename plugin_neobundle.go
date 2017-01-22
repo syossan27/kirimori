@@ -19,6 +19,10 @@ type AddNeoBundleVisitor struct {
 func (v *AddNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	if node != nil {
 		switch n := node.(type) {
+		case *ast.Ident:
+			if n.Name == "neobundle#begin" {
+				v.Line = n.Pos().Line
+			}
 		case *ast.Excmd:
 			name := n.Cmd().Name
 			if name == "NeoBundle" || name == "NeoBundleFetch" {
