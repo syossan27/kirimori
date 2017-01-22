@@ -50,7 +50,7 @@ func cmdInit(c *cli.Context) error {
 		s = strings.TrimSpace(s)
 		if i, err := strconv.Atoi(s); err == nil {
 			if i > 0 && i <= len(pluginManagers) {
-				managerType = pluginManagers[i].Name
+				managerType = pluginManagers[i-1].Name
 				break
 			}
 		}
