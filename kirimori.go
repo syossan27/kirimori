@@ -90,7 +90,7 @@ type PluginManager interface {
 }
 
 func success(msg string) {
-	fmt.Fprintf(stderr, "\x1b[32m%s\x1b[0m\n", msg)
+	fmt.Fprintf(stdout, "\x1b[32m%s\x1b[0m\n", msg)
 }
 
 func fatal(msg string) {
