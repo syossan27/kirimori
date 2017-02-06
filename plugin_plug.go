@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"io"
+	"os"
+	"os/exec"
 	"strings"
 	"unicode/utf8"
 
@@ -90,6 +92,16 @@ func (p *PluginPlug) AddLine(r io.Reader) int {
 	return v.Line
 }
 
+func (p *PluginPlug) InstallExCmd() {
+	cmd := exec.Command("vim", "-c", "PlugInstall", "-c", "qa")
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	err := cmd.Run()
+	if err != nil {
+		fatal("Error: Fail install plugin.")
+	}
+}
+
 // RemoveLine implement PluginManager.RemoveLine
 func (p *PluginPlug) RemoveLine(r io.Reader, pluginName string) int {
 	f, err := vimlparser.ParseFile(r, "", opt)
@@ -101,6 +113,16 @@ func (p *PluginPlug) RemoveLine(r io.Reader, pluginName string) int {
 	ast.Walk(v, f)
 
 	return v.Line
+}
+
+func (p *PluginPlug) RemoveExCmd() {
+	cmd := exec.Command("vim", "-c", "PlugClean", "-c", "qa")
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	err := cmd.Run()
+	if err != nil {
+		fatal("Error: Fail remove plugin.")
+	}
 }
 
 // ListPlugin implement PluginManager.ListPlugin

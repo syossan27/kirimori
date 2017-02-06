@@ -22,8 +22,8 @@ func cmdRemove(c *cli.Context) error {
 	}
 	defer f.Close()
 
-	// true: プラグインマネージャーの種類を取得し、case文でそれぞれ処理
-	line := conf.Manager().RemoveLine(f, name)
+	manager := conf.Manager()
+	line := manager.RemoveLine(f, name)
 
 	_, err = f.Seek(0, 0)
 	if err != nil {
@@ -37,6 +37,8 @@ func cmdRemove(c *cli.Context) error {
 	if err := updateVimrc(conf.VimrcPath, b); err != nil {
 		fatal("Error: Fail remove plugin.")
 	}
+
+	manager.RemoveExCmd()
 
 	success("Success: Remove plugin.")
 	return nil

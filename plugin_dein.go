@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"io"
+	"os"
+	"os/exec"
 	"strings"
 
 	vimlparser "github.com/haya14busa/go-vimlparser"
@@ -94,6 +96,16 @@ func (p *PluginDein) AddLine(r io.Reader) int {
 	return v.Line
 }
 
+func (p *PluginDein) InstallExCmd() {
+	cmd := exec.Command("vim", "-c", "call dein#install()", "-c", "qa")
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	err := cmd.Run()
+	if err != nil {
+		fatal("Error: Fail install plugin.")
+	}
+}
+
 // RemoveLine implement PluginManager.RemoveLine
 func (p *PluginDein) RemoveLine(r io.Reader, pluginName string) int {
 	f, err := vimlparser.ParseFile(r, "", opt)
@@ -105,6 +117,11 @@ func (p *PluginDein) RemoveLine(r io.Reader, pluginName string) int {
 	ast.Walk(v, f)
 
 	return v.Line
+}
+
+func (p *PluginDein) RemoveExCmd() {
+	// Noop
+	// Note: https://github.com/Shougo/dein.vim/issues/156
 }
 
 // ListPlugin implement PluginManager.ListPlugin

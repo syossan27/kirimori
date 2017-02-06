@@ -39,6 +39,8 @@ func cmdAdd(c *cli.Context) error {
 		fatal("Error: Fail add plugin.")
 	}
 
+	manager.InstallExCmd()
+
 	success("Success: Add plugin.")
 
 	return nil
