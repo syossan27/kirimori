@@ -15,6 +15,7 @@ import (
 // AddNeoBundleVisitor is walker
 type AddNeoBundleVisitor struct {
 	Line int
+	Name string
 }
 
 // Visit implement ast.Walker
@@ -28,6 +29,9 @@ func (v *AddNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 		case *ast.Excmd:
 			name := n.Cmd().Name
 			if name == "NeoBundle" || name == "NeoBundleFetch" {
+				if strings.Contains(n.Command, v.Name) {
+					fatal("Error: Installed plugin.")
+				}
 				v.Line = n.Pos().Line
 			}
 		}
@@ -48,7 +52,7 @@ func (v *RemoveNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 		case *ast.Excmd:
 			name := n.Cmd().Name
 			if name == "NeoBundle" || name == "NeoBundleFetch" {
-				if v.Name != "" && strings.Contains(n.Command, v.Name) {
+				if strings.Contains(n.Command, v.Name) {
 					v.Line = n.Pos().Line
 				}
 			}
@@ -84,12 +88,13 @@ func (v *ListNeoBundleVisitor) Visit(node ast.Node) (w ast.Visitor) {
 type PluginNeoBundle struct{}
 
 // AddLine implement PluginManager.AddLine
-func (p *PluginNeoBundle) AddLine(r io.Reader) int {
+func (p *PluginNeoBundle) AddLine(r io.Reader, pluginName string) int {
 	f, err := vimlparser.ParseFile(r, "", opt)
 	if err != nil {
 		fatal("Error: Fail parse .vimrc file.")
 	}
 	v := new(AddNeoBundleVisitor)
+	v.Name = pluginName
 	ast.Walk(v, f)
 
 	return v.Line
