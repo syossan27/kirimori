@@ -34,6 +34,14 @@ Type number > 1
 Success: Create setting file.
 ```
 
+- Edit setting file.
+
+Open config file by any editor (default: vim)
+
+```
+$ kirimori config
+```
+
 - Add vim plugin
 
 ```
