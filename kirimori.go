@@ -84,7 +84,7 @@ var (
 
 // PluginManager is common interface of the plugin manages
 type PluginManager interface {
-	AddLine(io.Reader) int
+	AddLine(io.Reader, string) int
 	InstallExCmd()
 	ListPlugin(io.Reader) []string
 	RemoveLine(io.Reader, string) int

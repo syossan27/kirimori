@@ -15,6 +15,7 @@ import (
 // AddPlugVisitor is walker
 type AddPlugVisitor struct {
 	Line int
+	Name string
 }
 
 // Visit implement ast.Walker
@@ -27,6 +28,9 @@ func (v *AddPlugVisitor) Visit(node ast.Node) (w ast.Visitor) {
 			}
 		case *ast.Excmd:
 			if n.Cmd().Name == "Plug" {
+				if strings.Contains(n.Command, v.Name) {
+					fatal("Error: Installed plugin.")
+				}
 				v.Line = n.Pos().Line
 			}
 		}
@@ -46,7 +50,7 @@ func (v *RemovePlugVisitor) Visit(node ast.Node) (w ast.Visitor) {
 		switch n := node.(type) {
 		case *ast.Excmd:
 			if n.Cmd().Name == "Plug" {
-				if v.Name != "" && strings.Contains(n.Command, v.Name) {
+				if strings.Contains(n.Command, v.Name) {
 					v.Line = n.Pos().Line
 				}
 			}
@@ -81,12 +85,13 @@ func (v *ListPlugVisitor) Visit(node ast.Node) (w ast.Visitor) {
 type PluginPlug struct{}
 
 // AddLine implement PluginManager.AddLine
-func (p *PluginPlug) AddLine(r io.Reader) int {
+func (p *PluginPlug) AddLine(r io.Reader, pluginName string) int {
 	f, err := vimlparser.ParseFile(r, "", opt)
 	if err != nil {
 		fatal("Error: Fail parse .vimrc file.")
 	}
 	v := new(AddPlugVisitor)
+	v.Name = pluginName
 	ast.Walk(v, f)
 
 	return v.Line

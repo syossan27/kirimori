@@ -14,6 +14,7 @@ import (
 // AddDeinVisitor is walker
 type AddDeinVisitor struct {
 	Line int
+	Name string
 }
 
 // Visit implement ast.Walker
@@ -23,6 +24,10 @@ func (v *AddDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
 		case *ast.Ident:
 			if n.Name == "dein#add" {
 				v.Line = n.Pos().Line
+			}
+		case *ast.BasicLit:
+			if strings.Contains(n.Value, v.Name) {
+				fatal("Error: Installed plugin.")
 			}
 		}
 	}
@@ -46,7 +51,7 @@ func (v *RemoveDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
 			}
 		case *ast.BasicLit:
 			if v.Found {
-				if v.Name != "" && strings.Contains(n.Value, v.Name) {
+				if strings.Contains(n.Value, v.Name) {
 					v.Line = n.Pos().Line
 					v.Found = false
 				}
@@ -85,12 +90,13 @@ func (v *ListDeinVisitor) Visit(node ast.Node) (w ast.Visitor) {
 type PluginDein struct{}
 
 // AddLine implement PluginManager.AddLine
-func (p *PluginDein) AddLine(r io.Reader) int {
+func (p *PluginDein) AddLine(r io.Reader, pluginName string) int {
 	f, err := vimlparser.ParseFile(r, "", opt)
 	if err != nil {
 		fatal("Error: Fail parse .vimrc file.")
 	}
 	v := new(AddDeinVisitor)
+	v.Name = pluginName
 	ast.Walk(v, f)
 
 	return v.Line

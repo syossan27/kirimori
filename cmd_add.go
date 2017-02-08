@@ -16,7 +16,6 @@ func cmdAdd(c *cli.Context) error {
 	// 設定ファイルの読み込み
 	conf := config()
 
-	// true: プラグインマネージャーの種類を取得し、case文でそれぞれ処理
 	f, err := os.OpenFile(conf.VimrcPath, os.O_RDWR|os.O_APPEND, 0666)
 	if err != nil {
 		fatal("Error: Can't open .vimrc file.")
@@ -24,7 +23,7 @@ func cmdAdd(c *cli.Context) error {
 	defer f.Close()
 
 	manager := conf.Manager()
-	line := manager.AddLine(f)
+	line := manager.AddLine(f, name)
 
 	_, err = f.Seek(0, 0)
 	if err != nil {
