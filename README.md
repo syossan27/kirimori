@@ -1,6 +1,8 @@
 # Kirimori（切り盛り）
 kirimori - Add vim plugin Tool.
 
+![screenshot](screenshot.gif)
+
 ## Requirement
 [golang/go](https://github.com/golang/go)
 
