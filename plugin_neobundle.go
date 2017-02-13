@@ -100,6 +100,7 @@ func (p *PluginNeoBundle) AddLine(r io.Reader, pluginName string) int {
 	return v.Line
 }
 
+// InstallExCmd implement PluginManager.InstallExCmd
 func (p *PluginNeoBundle) InstallExCmd() {
 	cmd := exec.Command("vim", "-c", "NeoBundleInstall", "-c", "qa")
 	cmd.Stdin = os.Stdin
@@ -123,6 +124,7 @@ func (p *PluginNeoBundle) RemoveLine(r io.Reader, pluginName string) int {
 	return v.Line
 }
 
+// RemoveExCmd implement PluginManager.RemoveExCmd
 func (p *PluginNeoBundle) RemoveExCmd() {
 	// Noop
 	// Note: https://github.com/Shougo/neobundle.vim/issues/356

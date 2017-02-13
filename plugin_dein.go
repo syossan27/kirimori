@@ -102,6 +102,7 @@ func (p *PluginDein) AddLine(r io.Reader, pluginName string) int {
 	return v.Line
 }
 
+// InstallExCmd implement PluginManager.InstallExCmd
 func (p *PluginDein) InstallExCmd() {
 	cmd := exec.Command("vim", "-c", "call dein#install()", "-c", "qa")
 	cmd.Stdin = os.Stdin
@@ -125,6 +126,7 @@ func (p *PluginDein) RemoveLine(r io.Reader, pluginName string) int {
 	return v.Line
 }
 
+// RemoveExCmd implement PluginManager.RemoveExCmd
 func (p *PluginDein) RemoveExCmd() {
 	// Noop
 	// Note: https://github.com/Shougo/dein.vim/issues/156
