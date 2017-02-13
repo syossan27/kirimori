@@ -75,11 +75,11 @@ func (c *Config) Manager() PluginManager {
 }
 
 var (
-	opt                    = &vimlparser.ParseOption{}
-	homePath, _            = homedir.Dir()
-	settingFilePath string = filepath.Join(homePath, ".kirimori.toml")
-	stdout                 = colorable.NewColorableStdout()
-	stderr                 = colorable.NewColorableStderr()
+	opt             = &vimlparser.ParseOption{}
+	homePath, _     = homedir.Dir()
+	settingFilePath = filepath.Join(homePath, ".kirimori.toml")
+	stdout          = colorable.NewColorableStdout()
+	stderr          = colorable.NewColorableStderr()
 )
 
 // PluginManager is common interface of the plugin manages

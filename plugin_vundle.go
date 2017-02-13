@@ -97,6 +97,7 @@ func (p *PluginVundle) AddLine(r io.Reader, pluginName string) int {
 	return v.Line
 }
 
+// InstallExCmd implement PluginManager.InstallExCmd
 func (p *PluginVundle) InstallExCmd() {
 	cmd := exec.Command("vim", "-c", "PluginInstall", "-c", "qa")
 	cmd.Stdin = os.Stdin
@@ -120,6 +121,7 @@ func (p *PluginVundle) RemoveLine(r io.Reader, pluginName string) int {
 	return v.Line
 }
 
+// RemoveExCmd implement PluginManager.RemoveExCmd
 func (p *PluginVundle) RemoveExCmd() {
 	cmd := exec.Command("vim", "-c", "PluginClean", "-c", "qa")
 	cmd.Stdin = os.Stdin

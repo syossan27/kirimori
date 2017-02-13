@@ -22,7 +22,7 @@ func testAddPlugin(t *testing.T, name, key string) {
 		t.Fatal(err)
 	}
 	defer f.Close()
-	line := conf.Manager().AddLine(f)
+	line := conf.Manager().AddLine(f, "mattn/emmet-vim")
 
 	_, err = f.Seek(0, 0)
 	if err != nil {
