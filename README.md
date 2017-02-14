@@ -18,6 +18,8 @@ kirimori - Add vim plugin Tool.
 
 [BurntSushi/toml](https://github.com/BurntSushi/toml)
 
+[haya14busa/go-vimlparser](https://github.com/haya14busa/go-vimlparser)
+
 ## Install
 ````
 $ go get github.com/syossan27/kirimori
