@@ -10,14 +10,12 @@ import (
 )
 
 func cmdConfig(c *cli.Context) error {
-	// 設定ファイルの読み込み
-	conf := config()
-
 	var cmd *exec.Cmd
+	var Editor = "vim"
 	if runtime.GOOS == "windows" {
-		cmd = exec.Command("cmd", "/c", fmt.Sprintf("%s %s", conf.Editor, settingFilePath))
+		cmd = exec.Command("cmd", "/c", fmt.Sprintf("%s %s", Editor, settingFilePath))
 	} else {
-		cmd = exec.Command("sh", "-c", fmt.Sprintf("%s %s", conf.Editor, settingFilePath))
+		cmd = exec.Command("sh", "-c", fmt.Sprintf("%s %s", Editor, settingFilePath))
 	}
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
