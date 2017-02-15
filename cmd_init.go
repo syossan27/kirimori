@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/BurntSushi/toml"
+	"github.com/Songmu/prompter"
 	"github.com/urfave/cli"
 )
 
@@ -24,22 +25,16 @@ func cmdInit(c *cli.Context) error {
 		vimrcName = ".vimrc"
 	}
 
-	var filename string
-	fmt.Println("Type your .vimrc path. (default: ~/" + vimrcName + ")")
-	fmt.Print("> ")
-	fmt.Scanln(&filename)
-	if filename == "" {
-		filename = filepath.Join(homePath, vimrcName)
-	}
+	var filename string = prompter.Prompt("Type your .vimrc path.", filepath.Join(homePath, vimrcName))
 
 	var managerType string
-	fmt.Println("Choose a your vim bundle plugin. (default: 1)")
+	fmt.Println("Choose a your vim bundle plugin.")
 	for i, pm := range pluginManagers {
 		fmt.Printf("\t%d) %s : %s\n", i+1, pm.Name, pm.URL)
 	}
 	managerType = "Vundle"
 	for {
-		fmt.Print("Type number > ")
+		fmt.Print("Type number. [1]: ")
 		var s string
 		if _, err := fmt.Scanln(&s); err != nil {
 			if s == "" {
