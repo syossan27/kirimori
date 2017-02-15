@@ -7,3 +7,4 @@ import:
 - package: github.com/mattn/go-colorable
   subpackages:
   - /cmd/vimlparser
+- package: github.com/Songmu/prompter

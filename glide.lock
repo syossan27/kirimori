@@ -1,20 +1,32 @@
-hash: 15390cbce5e97fbb8465dcc3e089f570ec57d734e5f6f3d4b1ab2e17dbbf40b8
-updated: 2017-01-15T00:15:04.45756666+09:00
+hash: c6e2fc590d38b8efe78d07f8283aa57bb1f8431cd301150825addb5b2f8f18e9
+updated: 2017-02-14T18:26:57.082917683+09:00
 imports:
-- name: BurntSushi/toml
-  version: ""
 - name: github.com/BurntSushi/toml
-  version: 99064174e013895bbd9b025c31100bd1d9b590ca
+  version: cb68e92df7c6f70c7abd8903cabef45e8e016acb
 - name: github.com/haya14busa/go-vimlparser
-  version: b1ac3e858b14dec160cec7b0965f0ae947c7764b
+  version: cb68e92df7c6f70c7abd8903cabef45e8e016acb
+- name: github.com/mattn/go-colorable
+  version: cb68e92df7c6f70c7abd8903cabef45e8e016acb
   subpackages:
   - /cmd/vimlparser
+- name: github.com/mattn/go-isatty
+  version: cb68e92df7c6f70c7abd8903cabef45e8e016acb
 - name: github.com/mitchellh/go-homedir
-  version: 756f7b183b7ab78acdbbee5c7f392838ed459dda
+  version: cb68e92df7c6f70c7abd8903cabef45e8e016acb
+- name: github.com/Songmu/prompter
+  version: f49666b0047d12850875d771340e1d862d9e7a0c
 - name: github.com/urfave/cli
-  version: d86a009f5e13f83df65d0d6cee9a2e3f1445f0da
+  version: cb68e92df7c6f70c7abd8903cabef45e8e016acb
+- name: golang.org/x/crypto
+  version: 453249f01cfeb54c3d549ddb75ff152ca243f9d8
+- name: golang.org/x/net
+  version: 61557ac0112b576429a0df080e1c2cef5dfbb642
+- name: golang.org/x/text
+  version: 06d6eba81293389cafdff7fca90d75592194b2d9
+- name: golang.org/x/tools
+  version: 6e7ee5a9ec598d425ca86d6aab6e76e21baf328c
 - name: gopkg.in/urfave/cli.v1
-  version: a14d7d367bc02b1f57d88de97926727f2d936387
+  version: 0bdeddeeb0f650497d603c4ad7b20cfe685682f6
 - name: gopkg.in/yaml.v2
-  version: a5b47d31c556af34a302ce5d659e6fea44d90de0
+  version: a3f3340b5840cee44f372bddb5880fcbc419b46a
 devImports: []
