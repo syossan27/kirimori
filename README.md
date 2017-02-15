@@ -20,6 +20,8 @@ kirimori - Add vim plugin Tool.
 
 [haya14busa/go-vimlparser](https://github.com/haya14busa/go-vimlparser)
 
+[Songmu/prompter](https://github.com/Songmu/prompter)
+
 ## Install
 ````
 $ go get github.com/syossan27/kirimori
