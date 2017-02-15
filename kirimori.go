@@ -60,7 +60,6 @@ var pluginManagers = []struct {
 type Config struct {
 	VimrcPath   string
 	ManagerType string
-	Editor      string
 }
 
 // Manager return PluginManager for the ManagerType
@@ -215,11 +214,6 @@ func config() *Config {
 	// .vimrcのパスにファイルが存在するかどうか判定
 	if !fileExists(conf.VimrcPath) {
 		fatal("Error: No .vimrc file exists.\n")
-	}
-	if conf.Editor == "" {
-		conf.Editor = "vim"
-	} else if !strings.Contains(conf.Editor, "vim") {
-		panic("WTF: invalid editor")
 	}
 	return &conf
 }
