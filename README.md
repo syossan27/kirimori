@@ -27,6 +27,10 @@ kirimori - Add vim plugin Tool.
 $ go get github.com/syossan27/kirimori
 ````
 
+or download file from releases page.
+
+https://github.com/syossan27/kirimori/releases
+
 ## Usage
 
 - Create setting file.
@@ -78,6 +82,7 @@ Shougo/neosnippet.vim
 ## Contributing
 
 You're most welcomed!💓
+
 Welcome pull request and issues.✨
 
 ## License
