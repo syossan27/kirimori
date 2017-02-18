@@ -13,7 +13,6 @@ func cmdAdd(c *cli.Context) error {
 		return errors.New("plguin name required")
 	}
 
-	// 設定ファイルの読み込み
 	conf := config()
 
 	f, err := os.OpenFile(conf.VimrcPath, os.O_RDWR|os.O_APPEND, 0666)

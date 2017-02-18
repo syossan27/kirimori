@@ -7,7 +7,6 @@ import (
 )
 
 func cmdList(c *cli.Context) error {
-	// 設定ファイルの読み込み
 	conf := config()
 
 	f, err := os.Open(conf.VimrcPath)

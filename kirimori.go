@@ -205,13 +205,12 @@ func updateVimrc(filename string, b []byte) error {
 }
 
 func config() *Config {
-	// 設定ファイルの読み込み
 	var conf Config
 	if _, err := toml.DecodeFile(settingFilePath, &conf); err != nil {
 		fatal("Error: Can't read setting file.")
 	}
 	conf.VimrcPath = regexp.MustCompile(`^~[/\\]`).ReplaceAllString(conf.VimrcPath, homePath)
-	// .vimrcのパスにファイルが存在するかどうか判定
+
 	if !fileExists(conf.VimrcPath) {
 		fatal("Error: No .vimrc file exists.\n")
 	}
