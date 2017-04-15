@@ -2,6 +2,7 @@
 [![Latest Version](https://img.shields.io/github/release/syossan27/kirimori.svg)](https://github.com/syossan27/kirimori/releases)
 [![CircleCI Status](https://circleci.com/gh/syossan27/kirimori.svg?style=shield)](https://circleci.com/gh/syossan27/kirimori)
 [![Coverage Status](https://coveralls.io/repos/github/syossan27/kirimori/badge.svg?branch=master)](https://coveralls.io/github/syossan27/kirimori?branch=master)
+[![Go Report Card](https://goreportcard.com/badge/github.com/syossan27/kirimori)](https://goreportcard.com/report/github.com/syossan27/kirimori)
 
 kirimori - Add vim plugin Tool.
 
