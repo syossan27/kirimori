@@ -105,7 +105,7 @@ func makeApp() *cli.App {
 
 	app.Name = "kirimori"
 	app.Usage = "Add Vim Plugin Tool"
-	app.Version = "0.0.1"
+	app.Version = "0.0.3"
 
 	app.Commands = []cli.Command{
 		{
