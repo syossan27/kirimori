@@ -25,7 +25,7 @@ func cmdInit(c *cli.Context) error {
 		vimrcName = ".vimrc"
 	}
 
-	var filename string = prompter.Prompt("Type your .vimrc path.", filepath.Join(homePath, vimrcName))
+	var filename = prompter.Prompt("Type your .vimrc path.", filepath.Join(homePath, vimrcName))
 
 	var managerType string
 	fmt.Println("Choose a your vim bundle plugin.")
