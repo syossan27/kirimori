@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/BurntSushi/toml"
-	vimlparser "github.com/haya14busa/go-vimlparser"
+	"github.com/haya14busa/go-vimlparser"
 	"github.com/mattn/go-colorable"
 	"github.com/mitchellh/go-homedir"
 	"github.com/urfave/cli"
