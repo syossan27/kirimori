@@ -10,7 +10,7 @@ import (
 func cmdAdd(c *cli.Context) error {
 	name := c.Args().First()
 	if name == "" {
-		return errors.New("plguin name required")
+		return errors.New("plugin name required")
 	}
 
 	conf := config()
