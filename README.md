@@ -80,6 +80,35 @@ Shougo/unite.vim
 Shougo/neosnippet.vim
 ```
 
+- Search vim plugin
+
+```
+$ kirimori search Shougo
+Total: 52
+
+Plugin Name                        Short Description
+shougo/unite.vim                   🐉  Unite and create user interfaces
+shougo/vimproc.vim                 Interactive command execution in Vim.
+shougo/neocomplete.vim             Next generation completion framework after neocomplcache
+shougo/neosnippet-snippets         The standard snippets repository for neosnippet
+shougo/neomru.vim                  MRU plugin includes unite.vim/denite.nvim MRU sources
+shougo/neosnippet.vim              neo-snippet plugin
+shougo/neocomplcache.vim           Ultimate auto-completion system for Vim.
+shougo/vimshell.vim                🐚  Powerful shell implemented by vim.
+shougo/unite-outline               outline source for unite.vim
+shougo/vimfiler.vim                📁  Powerful file explorer implemented by Vim script
+shougo/deoplete.nvim               🌠  Dark powered asynchronous completion framework for neovim/Vim8
+shougo/neoyank.vim                 Saves yank history includes unite.vim history/yank source.
+shougo/neoinclude.vim              Include completion framework for neocomplete/deoplete
+shougo/context_filetype.vim        Context filetype library for Vim script
+shougo/unite-help                  help source for unite.vim
+shougo/vinarise                    Ultimate hex editing system with Vim
+shougo/vinarise.vim                Ultimate hex editing system with Vim
+shougo/unite-session               unite.vim session source
+shougo/junkfile.vim                Create temporary file for memo, testing, ...
+shougo/echodoc                     Print documents in echo area.
+```
+
 ## Contributing
 
 You're most welcomed!💓
