@@ -8,6 +8,15 @@ import (
 	"testing"
 )
 
+func TestPlugins(t *testing.T) {
+	for _, pm := range pluginManagers {
+		testAddPlugin(t, pm.Name, pm.Key)
+		testListPlugin(t, pm.Name, pm.Key)
+		testRemovePlugin(t, pm.Name, pm.Key)
+		testSearchPlugin(t)
+	}
+}
+
 func testAddPlugin(t *testing.T, name, key string) {
 	settingFilePath = filepath.Join("testdir", key+".toml")
 	conf := config()
@@ -103,10 +112,9 @@ func testRemovePlugin(t *testing.T, name, key string) {
 	}
 }
 
-func TestPlugins(t *testing.T) {
-	for _, pm := range pluginManagers {
-		testAddPlugin(t, pm.Name, pm.Key)
-		testListPlugin(t, pm.Name, pm.Key)
-		testRemovePlugin(t, pm.Name, pm.Key)
+func testSearchPlugin(t *testing.T) {
+	err := searchPlugin("emmet-vim")
+	if err != nil {
+		t.Fatal(err)
 	}
 }
