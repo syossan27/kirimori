@@ -9,11 +9,19 @@ import (
 	"regexp"
 	"strings"
 
+	"encoding/json"
+
+	"text/tabwriter"
+
 	"github.com/BurntSushi/toml"
+	"github.com/fatih/color"
 	"github.com/haya14busa/go-vimlparser"
+	"github.com/koron/go-dproxy"
+	"github.com/kyokomi/emoji"
 	"github.com/mattn/go-colorable"
 	"github.com/mitchellh/go-homedir"
 	"github.com/urfave/cli"
+	"gopkg.in/resty.v1"
 )
 
 const (
@@ -104,8 +112,8 @@ func makeApp() *cli.App {
 	app := cli.NewApp()
 
 	app.Name = "kirimori"
-	app.Usage = "Add Vim Plugin Tool"
-	app.Version = "0.0.3"
+	app.Usage = "Manage Vim Plugin Tool"
+	app.Version = "0.0.4"
 
 	app.Commands = []cli.Command{
 		{
@@ -131,6 +139,12 @@ func makeApp() *cli.App {
 			Aliases: []string{"l"},
 			Usage:   "list plugin",
 			Action:  cmdList,
+		},
+		{
+			Name:    "search",
+			Aliases: []string{"s"},
+			Usage:   "search plugin in vimawesome.com",
+			Action:  cmdSearch,
 		},
 		{
 			Name:    "config",
@@ -201,6 +215,45 @@ func updateVimrc(filename string, b []byte) error {
 	writer := bufio.NewWriter(f)
 	writer.Write(b)
 	writer.Flush()
+	return err
+}
+
+func searchPlugin(pluginName string) error {
+	// Get search results
+	result, err := resty.SetRedirectPolicy(resty.FlexibleRedirectPolicy(20)).
+		R().
+		SetQueryParams(map[string]string{
+			"query": pluginName,
+			"page":  "1",
+		}).
+		Get("http://vimawesome.com/api/plugins")
+
+	// Parse search results for print
+	var resultInterface interface{}
+	err = json.Unmarshal(result.Body(), &resultInterface)
+	proxy := dproxy.New(resultInterface)
+	pluginsInterface, err := proxy.M("plugins").Array()
+	totalResults, err := proxy.M("total_results").Int64()
+
+	// Set PrintColor
+	green := color.New(color.FgGreen).SprintFunc()
+	yellow := color.New(color.FgYellow).SprintFunc()
+	red := color.New(color.FgRed).SprintFunc()
+
+	// Print search results
+	w := new(tabwriter.Writer)
+	w.Init(os.Stdout, 0, 0, 8, ' ', 0)
+	fmt.Printf("Total: %d\n\n", totalResults)
+	fmt.Fprintf(w, "%s\t%s\n", red("Plugin Name"), red("Short Description"))
+	for _, pluginInterface := range pluginsInterface {
+		proxy = dproxy.New(pluginInterface)
+		githubURL, _ := proxy.M("github_url").String()
+		pluginName := strings.Replace(githubURL, "https://github.com/", "", 1)
+		shortDesc, _ := proxy.M("short_desc").String()
+		fmt.Fprintf(w, "%s\t%s\n", green(pluginName), yellow(emoji.Sprint(shortDesc)))
+	}
+	w.Flush()
+
 	return err
 }
 

@@ -8,16 +8,39 @@
   version = "v0.3.0"
 
 [[projects]]
-  branch = "master"
   name = "github.com/Songmu/prompter"
   packages = ["."]
-  revision = "f49666b0047d12850875d771340e1d862d9e7a0c"
+  revision = "b5721e8d556682bcef33262731d98a39dee14dc4"
+  version = "0.1.0"
+
+[[projects]]
+  name = "github.com/fatih/color"
+  packages = ["."]
+  revision = "570b54cabe6b8eb0bc2dfce68d964677d63b5260"
+  version = "v1.5.0"
 
 [[projects]]
   branch = "master"
   name = "github.com/haya14busa/go-vimlparser"
-  packages = [".","ast","go","token"]
-  revision = "ba41116981f22b72c0063fa9fef4ed241a743113"
+  packages = [
+    ".",
+    "ast",
+    "go",
+    "token"
+  ]
+  revision = "6c96c660fcd05c64565e1d7bad3691a6810e738d"
+
+[[projects]]
+  name = "github.com/koron/go-dproxy"
+  packages = ["."]
+  revision = "009e1192eaace40a885c5b93c37613b3cae820d6"
+  version = "v1.1"
+
+[[projects]]
+  name = "github.com/kyokomi/emoji"
+  packages = ["."]
+  revision = "7e06b236c489543f53868841f188a294e3383eab"
+  version = "v1.5"
 
 [[projects]]
   name = "github.com/mattn/go-colorable"
@@ -44,19 +67,59 @@
   version = "v1.20.0"
 
 [[projects]]
+  branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "453249f01cfeb54c3d549ddb75ff152ca243f9d8"
+  revision = "1875d0a70c90e57f11972aefd42276df65e895b9"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/net"
+  packages = [
+    "idna",
+    "publicsuffix"
+  ]
+  revision = "b417086c80e91bfa321ef761574721644b8b9f61"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
-  packages = ["unix"]
-  revision = "43eea11bc92608addb41b8a406b0407495c106f6"
+  packages = [
+    "unix",
+    "windows"
+  ]
+  revision = "8f27ce8a604014414f8dfffc25cbcde83a3f2216"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/text"
+  packages = [
+    "collate",
+    "collate/build",
+    "internal/colltab",
+    "internal/gen",
+    "internal/tag",
+    "internal/triegen",
+    "internal/ucd",
+    "language",
+    "secure/bidirule",
+    "transform",
+    "unicode/bidi",
+    "unicode/cldr",
+    "unicode/norm",
+    "unicode/rangetable"
+  ]
+  revision = "e19ae1496984b1c655b8044a65c0300a3c878dd3"
+
+[[projects]]
+  name = "gopkg.in/resty.v1"
+  packages = ["."]
+  revision = "00cb083b8cdc8b0fb1e1f5ebe24bbc23e0ff0cf6"
+  version = "v1.2"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "61d2cc2942f23b606a70511abf2e34413c89e2d67e20450e02040ebafdb660fe"
+  inputs-digest = "e26c7db6938156c2ff894c574a0a1842baa7f6cb9b706427cb81977cf4cfbccd"
   solver-name = "gps-cdcl"
   solver-version = 1
